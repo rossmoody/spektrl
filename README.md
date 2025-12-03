@@ -1,38 +1,30 @@
-# sv
+<div align="center">
+ <a href="https://spektrl.com">
+  <img src="tbd.png" width="200" height="200">
+ </a>
+ <h1>Spektrl</h1>
+ <p>
+  <b>Noise and color.</b>
+ </p>
+ <br>
+</div>
 
-Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).
+## Features
 
-## Creating a project
+- Currently, nothing
 
-If you're seeing this, you've probably already done this step. Congrats!
+## FAQ
 
-```sh
-# create a new project in the current directory
-npx sv create
+### What is this?
 
-# create a new project in my-app
-npx sv create my-app
-```
+I don't know, yet.
 
-## Developing
+## Built with
 
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
+- [SvelteKit](https://github.com/sindresorhus/KeyboardShortcuts) - Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).
 
-```sh
-npm run dev
+## Links
 
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
-```
+I like making things. Check out what I'm up to lately:
 
-## Building
-
-To create a production version of your app:
-
-```sh
-npm run build
-```
-
-You can preview the production build with `npm run preview`.
-
-> To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.
+- [More apps by me](https://rossmoody.com)
