@@ -21,7 +21,7 @@ I don't know, yet.
 
 ## Built with
 
-- [SvelteKit](https://github.com/sindresorhus/KeyboardShortcuts) - Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).
+I don't know, yet.
 
 ## Links
 
