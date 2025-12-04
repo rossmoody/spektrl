@@ -2,9 +2,9 @@
  <a href="https://spektrl.com">
   <img src="tbd.png" width="200" height="200">
  </a>
- <h1>Spektrl</h1>
+ <h1>Spektrl – Where sound meets color</h1>
  <p>
-  <b>Noise and color.</b>
+  <b>Sound and color.</b>
  </p>
  <br>
 </div>

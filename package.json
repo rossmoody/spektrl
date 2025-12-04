@@ -1,5 +1,6 @@
 {
   "name": "spektrl",
+  "description": "An audio mixer for colored noise generation. Blend white, pink, brown, and blue noise with a visual interface where sound and color converge.",
   "private": true,
   "version": "0.0.1",
   "type": "module",
