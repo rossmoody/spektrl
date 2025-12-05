@@ -1,36 +1,36 @@
-import { NoiseGenerator } from "@scripts/noise-generator";
-import { useEffect, useRef, useState } from "react";
+import { NoiseGenerator } from '@scripts/noise-generator'
+import { useEffect, useRef, useState } from 'react'
 
 export function App() {
-  const [slope, setSlope] = useState(0);
-  const [volume, setVolume] = useState(0.5);
-  const [isPlaying, setIsPlaying] = useState(false);
-  const noiseRef = useRef<NoiseGenerator | null>(null);
+  const [slope, setSlope] = useState(0)
+  const [volume, setVolume] = useState(0.5)
+  const [isPlaying, setIsPlaying] = useState(false)
+  const noiseRef = useRef<NoiseGenerator | null>(null)
 
   useEffect(() => {
-    noiseRef.current = new NoiseGenerator();
-    return () => noiseRef.current?.dispose();
-  }, []);
+    noiseRef.current = new NoiseGenerator()
+    return () => noiseRef.current?.dispose()
+  }, [])
 
   useEffect(() => {
-    noiseRef.current?.setVolume(volume);
-  }, [volume]);
+    noiseRef.current?.setVolume(volume)
+  }, [volume])
 
   const toggle = () => {
     if (isPlaying) {
-      noiseRef.current?.stop();
+      noiseRef.current?.stop()
     } else {
-      noiseRef.current?.play(slope);
+      noiseRef.current?.play(slope)
     }
-    setIsPlaying(!isPlaying);
-  };
+    setIsPlaying(!isPlaying)
+  }
 
   const handleSlopeChange = (newSlope: number) => {
-    setSlope(newSlope);
+    setSlope(newSlope)
     if (isPlaying) {
-      noiseRef.current?.play(newSlope);
+      noiseRef.current?.play(newSlope)
     }
-  };
+  }
 
   return (
     <div>
@@ -62,7 +62,7 @@ export function App() {
         </label>
       </div>
 
-      <button onClick={toggle}>{isPlaying ? "Stop" : "Play"}</button>
+      <button onClick={toggle}>{isPlaying ? 'Stop' : 'Play'}</button>
     </div>
-  );
+  )
 }
