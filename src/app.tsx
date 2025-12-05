@@ -1,45 +1,68 @@
-const AUDIO_CONTEXT = new AudioContext();
-const SAMPLE_RATE = AUDIO_CONTEXT.sampleRate;
-let source: AudioBufferSourceNode | null = null;
+import { NoiseGenerator } from "@scripts/noise-generator";
+import { useEffect, useRef, useState } from "react";
 
-function generateWhiteNoise(sampleRate: number): Float32Array {
-  const buffer = new Float32Array(sampleRate);
+export function App() {
+  const [slope, setSlope] = useState(0);
+  const [volume, setVolume] = useState(0.5);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const noiseRef = useRef<NoiseGenerator | null>(null);
 
-  for (let i = 0; i < sampleRate; i++) {
-    buffer[i] = Math.random() * 2 - 1;
-  }
+  useEffect(() => {
+    noiseRef.current = new NoiseGenerator();
+    return () => noiseRef.current?.dispose();
+  }, []);
 
-  return buffer;
-}
+  useEffect(() => {
+    noiseRef.current?.setVolume(volume);
+  }, [volume]);
 
-function playWhiteNoise() {
-  const samples = generateWhiteNoise(SAMPLE_RATE);
+  const toggle = () => {
+    if (isPlaying) {
+      noiseRef.current?.stop();
+    } else {
+      noiseRef.current?.play(slope);
+    }
+    setIsPlaying(!isPlaying);
+  };
 
-  const audioBuffer = AUDIO_CONTEXT.createBuffer(
-    1,
-    samples.length,
-    SAMPLE_RATE
-  );
-  audioBuffer.getChannelData(0).set(samples);
+  const handleSlopeChange = (newSlope: number) => {
+    setSlope(newSlope);
+    if (isPlaying) {
+      noiseRef.current?.play(newSlope);
+    }
+  };
 
-  source = AUDIO_CONTEXT.createBufferSource();
-  source.buffer = audioBuffer;
-  source.loop = true;
-  source.connect(AUDIO_CONTEXT.destination);
-  source.start();
-}
-
-function pauseWhiteNoise() {
-  if (!source) return;
-  source.stop();
-  source = null;
-}
-
-export const App = () => {
   return (
     <div>
-      <button onClick={playWhiteNoise}>Play</button>
-      <button onClick={pauseWhiteNoise}>Pause</button>
+      <div>
+        <label>
+          Color:
+          <input
+            type="range"
+            min="-6"
+            max="6"
+            step="0.1"
+            value={slope}
+            onChange={(e) => handleSlopeChange(parseFloat(e.target.value))}
+          />
+        </label>
+      </div>
+
+      <div>
+        <label>
+          Volume:
+          <input
+            type="range"
+            min="0"
+            max="1"
+            step="0.01"
+            value={volume}
+            onChange={(e) => setVolume(parseFloat(e.target.value))}
+          />
+        </label>
+      </div>
+
+      <button onClick={toggle}>{isPlaying ? "Stop" : "Play"}</button>
     </div>
   );
-};
+}
