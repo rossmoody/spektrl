@@ -14,27 +14,55 @@ export class NoiseGenerator {
    */
   private gainNode: GainNode
 
+  /**
+   * To move sound between left and right audio channels.
+   */
+  private panner: StereoPannerNode
+
   constructor() {
     this.audioContext = new AudioContext()
     this.gainNode = this.audioContext.createGain()
+    this.panner = this.audioContext.createStereoPanner()
+
+    // Chain: source → panner → gainNode → destination
+    this.panner.connect(this.gainNode)
     this.gainNode.connect(this.audioContext.destination)
+
+    this.gainNode.gain.value = 0.25
+    this.panner.pan.value = 0
   }
 
+  /**
+   * Sets the pan value for stereo output
+   * @param value -1 (left) to 1 (right)
+   */
+  setPan(value: number) {
+    this.panner.pan.value = value
+  }
+
+  /**
+   * Bicorrelates and plays noise with the specified slope. We do this for
+   * both left and right channels to create a stereo effect. Also because
+   * independent noise for each channel sounds better and we pan them.
+   */
   play(slope: number) {
     this.stop()
 
-    const samples = this.generateNoise(slope)
+    const leftSamples = this.generateNoise(slope)
+    const rightSamples = this.generateNoise(slope)
+
     const buffer = this.audioContext.createBuffer(
-      1,
-      samples.length,
+      2,
+      leftSamples.length,
       this.audioContext.sampleRate,
     )
-    buffer.getChannelData(0).set(samples)
+    buffer.getChannelData(0).set(leftSamples)
+    buffer.getChannelData(1).set(rightSamples)
 
     this.source = this.audioContext.createBufferSource()
     this.source.buffer = buffer
     this.source.loop = true
-    this.source.connect(this.gainNode)
+    this.source.connect(this.panner)
     this.source.start()
   }
 
@@ -55,7 +83,12 @@ export class NoiseGenerator {
 
     const white = new Float32Array(length)
     for (let i = 0; i < length; i++) {
-      white[i] = Math.random() * 2 - 1
+      white[i] = Math.random() * 2 - 1 // A number between -1 and 1
+    }
+
+    switch (true) {
+      case slope < 0: {
+      }
     }
 
     if (Math.abs(slope) < 0.1) {
@@ -63,10 +96,8 @@ export class NoiseGenerator {
     }
 
     if (slope < 0) {
-      // Integration pathway (toward brown)
-      const factor = Math.abs(slope) / 6
+      const normalizedSlope = Math.abs(slope) / 6
 
-      // Brown: random walk
       let brownValue = 0
       const brown = new Float32Array(length)
       for (let i = 0; i < length; i++) {
@@ -98,11 +129,11 @@ export class NoiseGenerator {
 
       // Interpolate: white -> pink -> brown
       for (let i = 0; i < length; i++) {
-        if (factor <= 0.5) {
-          const t = factor * 2
+        if (normalizedSlope <= 0.5) {
+          const t = normalizedSlope * 2
           buffer[i] = white[i] * (1 - t) + pink[i] * t
         } else {
-          const t = (factor - 0.5) * 2
+          const t = (normalizedSlope - 0.5) * 2
           buffer[i] = pink[i] * (1 - t) + brown[i] * t
         }
       }
@@ -148,7 +179,7 @@ export class NoiseGenerator {
       }
     }
 
-    // Final normalization
+    // Normalize final buffer
     let max = 0
     for (let i = 0; i < length; i++) {
       max = Math.max(max, Math.abs(buffer[i]))
@@ -163,10 +194,25 @@ export class NoiseGenerator {
   }
 
   /**
-   * Cleans up and releases audio resources.
+   * Cleans up and releases audio resources
    */
   dispose() {
     this.stop()
     this.audioContext.close()
+  }
+
+  /**
+   * Adds a low pass filter to the audio chain
+   */
+  addLowPassFilter(frequencyInput: number) {
+    const frequency = 200 * Math.pow(15000 / 200, frequencyInput) // Map 0-1 to 200-15000 Hz
+    console.log('Setting low pass filter frequency to:', frequency)
+    const filter = this.audioContext.createBiquadFilter()
+    filter.type = 'lowpass'
+    filter.frequency.value = frequency
+
+    this.gainNode.disconnect()
+    this.gainNode.connect(filter)
+    filter.connect(this.audioContext.destination)
   }
 }

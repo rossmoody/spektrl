@@ -3,7 +3,9 @@ import { useEffect, useRef, useState } from 'react'
 
 export function App() {
   const [slope, setSlope] = useState(0)
-  const [volume, setVolume] = useState(0.5)
+  const [filterFrequency, setFilterFrequency] = useState(1)
+  const [volume, setVolume] = useState(0.25)
+  const [pan, setPan] = useState(0)
   const [isPlaying, setIsPlaying] = useState(false)
   const noiseRef = useRef<NoiseGenerator | null>(null)
 
@@ -11,10 +13,6 @@ export function App() {
     noiseRef.current = new NoiseGenerator()
     return () => noiseRef.current?.dispose()
   }, [])
-
-  useEffect(() => {
-    noiseRef.current?.setVolume(volume)
-  }, [volume])
 
   const toggle = () => {
     if (isPlaying) {
@@ -32,11 +30,26 @@ export function App() {
     }
   }
 
+  const handleFilterFrequencyChange = (newFrequency: number) => {
+    setFilterFrequency(newFrequency)
+    noiseRef.current?.addLowPassFilter(newFrequency)
+  }
+
+  const handlePanChange = (newPan: number) => {
+    setPan(newPan)
+    noiseRef.current?.setPan(newPan)
+  }
+
+  const handleVolumeChange = (newVolume: number) => {
+    setVolume(newVolume)
+    noiseRef.current?.setVolume(newVolume)
+  }
+
   return (
     <div>
       <div>
         <label>
-          Color:
+          Color
           <input
             type="range"
             min="-6"
@@ -50,14 +63,44 @@ export function App() {
 
       <div>
         <label>
-          Volume:
+          Filter Frequency
+          <input
+            type="range"
+            min="0"
+            max="1"
+            step="0.01"
+            value={filterFrequency}
+            onChange={(e) =>
+              handleFilterFrequencyChange(parseFloat(e.target.value))
+            }
+          />
+        </label>
+      </div>
+
+      <div>
+        <label>
+          Volume
           <input
             type="range"
             min="0"
             max="1"
             step="0.01"
             value={volume}
-            onChange={(e) => setVolume(parseFloat(e.target.value))}
+            onChange={(e) => handleVolumeChange(parseFloat(e.target.value))}
+          />
+        </label>
+      </div>
+
+      <div>
+        <label>
+          Pan
+          <input
+            type="range"
+            min="-1"
+            max="1"
+            step="0.01"
+            value={pan}
+            onChange={(e) => handlePanChange(parseFloat(e.target.value))}
           />
         </label>
       </div>
