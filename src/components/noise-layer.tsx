@@ -15,13 +15,18 @@ const {
 
 interface NoiseLayerProps {
   layer: NoiseLayer
+  globalPlaying: boolean
 }
 
-export function NoiseLayer({ layer }: NoiseLayerProps) {
+export function NoiseLayer({ layer, globalPlaying }: NoiseLayerProps) {
   const handleMuteChange = (event: HTMLInputChangeEvent) => {
     const isMuted = event.target.checked
     setMute(layer.id, isMuted)
-    isMuted ? layer.noise.stop() : layer.noise.play()
+    if (!isMuted && globalPlaying) {
+      layer.noise.play()
+    } else {
+      layer.noise.stop()
+    }
   }
 
   const handleColorChange = (event: HTMLInputChangeEvent) => {

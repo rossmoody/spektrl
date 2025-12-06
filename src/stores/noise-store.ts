@@ -15,7 +15,7 @@ export interface NoiseLayer {
 
 export interface NoiseStore {
   layers: NoiseLayer[]
-  addLayer: () => void
+  addLayer: () => NoiseLayer
   removeLayer: (id: string) => void
   playAll: () => void
   stopAll: () => void
@@ -109,11 +109,12 @@ export const useNoiseStore = create<NoiseStore>((set, get) => ({
       volume: 0.25,
       pan: 0,
       filterFrequency: 1,
-      isPlaying: false,
+      isPlaying: true,
       isBreathing: false,
       isMuted: false,
     }
     set((state) => ({ layers: [...state.layers, layer] }))
+    return layer
   },
 
   removeLayer: (id) => {
