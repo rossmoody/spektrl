@@ -1,3 +1,5 @@
+const audioContext = new AudioContext()
+
 export class NoiseGenerator {
   private audioContext: AudioContext
   private source: AudioBufferSourceNode | null = null
@@ -9,7 +11,7 @@ export class NoiseGenerator {
   private compressor: DynamicsCompressorNode
 
   constructor() {
-    this.audioContext = new AudioContext()
+    this.audioContext = audioContext
     this.volume = this.audioContext.createGain()
     this.panner = this.audioContext.createStereoPanner()
     this.lowPassFilter = this.audioContext.createBiquadFilter()
@@ -215,6 +217,5 @@ export class NoiseGenerator {
 
   dispose() {
     this.stop()
-    this.audioContext.close()
   }
 }
