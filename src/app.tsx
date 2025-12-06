@@ -31,7 +31,7 @@ export function App() {
     <div>
       <div>
         <label>
-          Color: {slope}
+          Color
           <input
             type="range"
             min="-6"

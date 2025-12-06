@@ -6,6 +6,7 @@ export class NoiseGenerator {
   private lowPassFilter: BiquadFilterNode
   private breatheOscillator: OscillatorNode
   private breatheGain: GainNode
+  private compressor: DynamicsCompressorNode
 
   constructor() {
     this.audioContext = new AudioContext()
@@ -14,10 +15,12 @@ export class NoiseGenerator {
     this.lowPassFilter = this.audioContext.createBiquadFilter()
     this.breatheOscillator = this.audioContext.createOscillator()
     this.breatheGain = this.audioContext.createGain()
+    this.compressor = this.audioContext.createDynamicsCompressor()
 
-    // Chain: source → panner → filter → volume → destination
+    // Chain: source → panner → filter → compressor → volume → destination
     this.panner.connect(this.lowPassFilter)
-    this.lowPassFilter.connect(this.volume)
+    this.lowPassFilter.connect(this.compressor)
+    this.compressor.connect(this.volume)
     this.volume.connect(this.audioContext.destination)
 
     // Breathe LFO modulates volume | breatheOscillator → breatheGain → volume gain
@@ -32,6 +35,13 @@ export class NoiseGenerator {
     this.panner.pan.value = 0
     this.breatheOscillator.frequency.value = 0.1 // one cycle per 10 seconds
     this.breatheGain.gain.value = 0
+
+    // Compressor defaults
+    this.compressor.threshold.value = -24
+    this.compressor.knee.value = 12
+    this.compressor.ratio.value = 4
+    this.compressor.attack.value = 0.005
+    this.compressor.release.value = 0.1
   }
 
   toggleBreathe(enabled: boolean) {
