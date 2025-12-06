@@ -9,7 +9,10 @@ export function App() {
   const addLayer = () => {
     const noise = new Noise()
     setLayers((prevLayers) => [...prevLayers, noise])
-    noise.play()
+
+    if (isPlaying) {
+      noise.play()
+    }
   }
 
   const toggle = () => {
@@ -27,7 +30,7 @@ export function App() {
         <NoiseCard key={index} noise={layer} />
       ))}
       <button onClick={addLayer}>Add Layer</button>
-      <button onClick={toggle}>{isPlaying ? 'Stop' : 'Play'}</button>
+      <button onClick={toggle}>{isPlaying ? 'Pause' : 'Play'}</button>
     </div>
   )
 }

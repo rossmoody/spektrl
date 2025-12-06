@@ -1,12 +1,21 @@
 import { Noise } from '@/scripts/noise'
+import { useSyncExternalStore } from 'react'
 
 type Props = {
   noise: Noise
 }
 
 export const NoiseCard = ({ noise }: Props) => {
+  const isPlaying = useSyncExternalStore(
+    (callback) => {
+      noise.subscribe(callback)
+      return () => noise.unsubscribe(callback)
+    },
+    () => noise.isPlaying,
+  )
+
   return (
-    <div>
+    <fieldset>
       <div>
         <label>
           Color
@@ -79,6 +88,10 @@ export const NoiseCard = ({ noise }: Props) => {
           />
         </label>
       </div>
-    </div>
+
+      <button onClick={() => noise.toggle()}>
+        {isPlaying ? 'Pause' : 'Play'}
+      </button>
+    </fieldset>
   )
 }
