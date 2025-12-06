@@ -4,8 +4,6 @@ export class NoiseGenerator {
   private volume: GainNode
   private panner: StereoPannerNode
   private lowPassFilter: BiquadFilterNode
-  private oscillator: OscillatorNode
-  private oscillatorGain: GainNode
   private breatheOscillator: OscillatorNode
   private breatheGain: GainNode
 
@@ -14,8 +12,6 @@ export class NoiseGenerator {
     this.volume = this.audioContext.createGain()
     this.panner = this.audioContext.createStereoPanner()
     this.lowPassFilter = this.audioContext.createBiquadFilter()
-    this.oscillator = this.audioContext.createOscillator()
-    this.oscillatorGain = this.audioContext.createGain()
     this.breatheOscillator = this.audioContext.createOscillator()
     this.breatheGain = this.audioContext.createGain()
 
@@ -23,11 +19,6 @@ export class NoiseGenerator {
     this.panner.connect(this.lowPassFilter)
     this.lowPassFilter.connect(this.volume)
     this.volume.connect(this.audioContext.destination)
-
-    // LFO modulates filter frequency | oscillator → gain → filter frequency
-    this.oscillator.connect(this.oscillatorGain)
-    this.oscillatorGain.connect(this.lowPassFilter.frequency)
-    this.oscillator.start()
 
     // Breathe LFO modulates volume | breatheOscillator → breatheGain → volume gain
     this.breatheOscillator.connect(this.breatheGain)
@@ -39,18 +30,12 @@ export class NoiseGenerator {
     this.lowPassFilter.frequency.value = 15000 // fully open
     this.volume.gain.value = 0.25
     this.panner.pan.value = 0
-    this.oscillator.frequency.value = 0.1
-    this.oscillatorGain.gain.value = 0
     this.breatheOscillator.frequency.value = 0.1 // one cycle per 10 seconds
     this.breatheGain.gain.value = 0
   }
 
   toggleBreathe(enabled: boolean) {
     this.breatheGain.gain.value = enabled ? 0.05 : 0
-  }
-
-  toggleOscillator(enabled: boolean) {
-    this.oscillatorGain.gain.value = enabled ? 500 : 0
   }
 
   setPan(value: number) {
@@ -100,14 +85,6 @@ export class NoiseGenerator {
   setFilterFrequency(frequencyInput: number) {
     const frequency = 200 * Math.pow(15000 / 200, frequencyInput)
     this.lowPassFilter.frequency.value = frequency
-  }
-
-  setLfoRate(rate: number) {
-    this.oscillator.frequency.value = rate
-  }
-
-  setLfoDepth(depth: number) {
-    this.oscillatorGain.gain.value = depth
   }
 
   private generateNoise(slope: number): Float32Array {
@@ -228,7 +205,6 @@ export class NoiseGenerator {
 
   dispose() {
     this.stop()
-    this.oscillator.stop()
     this.audioContext.close()
   }
 }
