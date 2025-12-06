@@ -1,38 +1,26 @@
-import { useState } from 'react'
-import { NoiseCard } from './components/noise-card'
-import { Noise } from './scripts/noise'
+// App.tsx
+import { NoiseLayer } from '@components/noise-layer'
+import { useNoiseStore } from '@stores/noise-store'
+
+const {} = useNoiseStore.getState()
 
 export function App() {
-  const [layers, setLayers] = useState<Noise[]>([])
-  const [globalPlaying, setGlobalPlaying] = useState(false)
+  const layers = useNoiseStore((s) => s.layers)
+  const addLayer = useNoiseStore((s) => s.addLayer)
+  const playAll = useNoiseStore((s) => s.playAll)
+  const stopAll = useNoiseStore((s) => s.stopAll)
 
-  const addLayer = () => {
-    const noise = new Noise()
-    setLayers((prevLayers) => [...prevLayers, noise])
-
-    if (globalPlaying) {
-      noise.play()
-    }
-  }
-
-  const toggle = () => {
-    if (globalPlaying) {
-      layers.forEach((n) => n.stop())
-    } else {
-      layers.forEach((n) => {
-        if (n.active) n.play()
-      })
-    }
-    setGlobalPlaying(!globalPlaying)
-  }
+  const isPlaying = layers.some((l) => l.isPlaying)
 
   return (
     <div>
       {layers.map((layer) => (
-        <NoiseCard key={layer.id} noise={layer} globalPlaying={globalPlaying} />
+        <NoiseLayer key={layer.id} layer={layer} />
       ))}
       <button onClick={addLayer}>Add Layer</button>
-      <button onClick={toggle}>{globalPlaying ? 'Pause' : 'Play'}</button>
+      <button onClick={isPlaying ? stopAll : playAll}>
+        {isPlaying ? 'Stop' : 'Play'}
+      </button>
     </div>
   )
 }

@@ -1,10 +1,8 @@
-import { audioContext } from '@/consts/audio-context'
+import { audioContext } from '@consts/audio-context'
 
 export class Noise {
-  // Core
   private audioContext: AudioContext
   private source: AudioBufferSourceNode | null = null
-  public id: string = crypto.randomUUID()
 
   // Signal chain
   private panner: StereoPannerNode
@@ -15,10 +13,6 @@ export class Noise {
   // Breathe LFO
   private breatheOscillator: OscillatorNode
   private breatheGain: GainNode
-
-  // State
-  public slope: number = 0
-  public active: boolean = true
 
   constructor() {
     this.audioContext = audioContext
@@ -60,12 +54,11 @@ export class Noise {
 
   // Playback
 
-  play() {
+  play(slope: number = 0) {
     this.stop()
 
-    const leftSamples = this.generateNoise(this.slope)
-    const rightSamples = this.generateNoise(this.slope)
-
+    const leftSamples = this.generateNoise(slope)
+    const rightSamples = this.generateNoise(slope)
     this.applyStereoWidth(leftSamples, rightSamples, 2)
 
     const buffer = this.audioContext.createBuffer(
@@ -90,38 +83,22 @@ export class Noise {
     }
   }
 
-  // Getters & Setters
+  // Parameter Controls
 
-  get isPlaying() {
-    return this.source !== null
-  }
-
-  get volume() {
-    return this.volumeNode.gain.value
-  }
-
-  set volume(value: number) {
+  applyVolume(value: number) {
     this.volumeNode.gain.value = value
   }
 
-  get pan() {
-    return this.panner.pan.value
-  }
-
-  set pan(value: number) {
+  applyPan(value: number) {
     this.panner.pan.value = value
   }
 
-  get filterFrequency() {
-    return this.lowPassFilter.frequency.value
-  }
-
-  set filterFrequency(frequencyInput: number) {
-    const frequency = 200 * Math.pow(15000 / 200, frequencyInput)
+  applyFilterFrequency(value: number) {
+    const frequency = 200 * Math.pow(15000 / 200, value)
     this.lowPassFilter.frequency.value = frequency
   }
 
-  toggleBreathe(enabled: boolean) {
+  applyBreathe(enabled: boolean) {
     this.breatheGain.gain.value = enabled ? 0.05 : 0
   }
 
