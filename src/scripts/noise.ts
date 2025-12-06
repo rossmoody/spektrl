@@ -1,6 +1,6 @@
-const audioContext = new AudioContext()
+import { audioContext } from '@/consts/audio-context'
 
-export class NoiseGenerator {
+export class Noise {
   private audioContext: AudioContext
   private source: AudioBufferSourceNode | null = null
   private volume: GainNode
@@ -213,9 +213,5 @@ export class NoiseGenerator {
     }
 
     return buffer
-  }
-
-  dispose() {
-    this.stop()
   }
 }
