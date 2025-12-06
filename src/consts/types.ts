@@ -1,3 +1,4 @@
+import type { BinauralGenerator } from '@scripts/binaural-generator'
 import type { NoiseGenerator } from '@scripts/noise-generator'
 
 export interface BaseLayer {
@@ -19,7 +20,7 @@ export interface NoiseLayer extends BaseLayer {
 
 export interface BinauralLayer extends BaseLayer {
   type: 'binaural'
-  //   engine: Binaural
+  engine: BinauralGenerator
   carrierFrequency: number
   beatFrequency: number
 }
