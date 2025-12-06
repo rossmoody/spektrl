@@ -1,12 +1,12 @@
 import { Noise } from '@/scripts/noise'
 
-type NoiseProps = {
+type Props = {
   noise: Noise
 }
 
-export const NoiseCard = ({ noise }: NoiseProps) => {
+export const NoiseCard = ({ noise }: Props) => {
   return (
-    <>
+    <div>
       <div>
         <label>
           Color
@@ -15,7 +15,13 @@ export const NoiseCard = ({ noise }: NoiseProps) => {
             min="-6"
             max="6"
             step="0.1"
-            onChange={(e) => noise.play(parseFloat(e.target.value))}
+            onChange={(e) => {
+              const slope = parseFloat(e.target.value)
+              noise.slope = slope
+              if (noise.isPlaying) {
+                noise.play()
+              }
+            }}
           />
         </label>
       </div>
@@ -30,7 +36,7 @@ export const NoiseCard = ({ noise }: NoiseProps) => {
             step="0.01"
             defaultValue={1}
             onChange={(e) =>
-              noise.setFilterFrequency(parseFloat(e.target.value))
+              (noise.filterFrequency = parseFloat(e.target.value))
             }
           />
         </label>
@@ -45,7 +51,7 @@ export const NoiseCard = ({ noise }: NoiseProps) => {
             max="1"
             step="0.01"
             defaultValue={0.25}
-            onChange={(e) => noise.setVolume(parseFloat(e.target.value))}
+            onChange={(e) => (noise.volume = parseFloat(e.target.value))}
           />
         </label>
       </div>
@@ -59,7 +65,7 @@ export const NoiseCard = ({ noise }: NoiseProps) => {
             max="1"
             step="0.01"
             defaultValue={0}
-            onChange={(e) => noise.setPan(parseFloat(e.target.value))}
+            onChange={(e) => (noise.pan = parseFloat(e.target.value))}
           />
         </label>
       </div>
@@ -73,6 +79,6 @@ export const NoiseCard = ({ noise }: NoiseProps) => {
           />
         </label>
       </div>
-    </>
+    </div>
   )
 }

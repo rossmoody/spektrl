@@ -8,14 +8,15 @@ export function App() {
 
   const addLayer = () => {
     const noise = new Noise()
-    setLayers([...layers, noise])
+    setLayers((prevLayers) => [...prevLayers, noise])
+    noise.play()
   }
 
   const toggle = () => {
     if (isPlaying) {
       layers.forEach((n) => n.stop())
     } else {
-      layers.forEach((n) => n.play(0))
+      layers.forEach((n) => n.play())
     }
     setIsPlaying(!isPlaying)
   }
