@@ -1,13 +1,13 @@
 // App.tsx
 import { NoiseLayer } from '@components/noise-layer'
-import { useNoiseStore } from '@stores/noise-store'
+import { useSoundStore } from '@stores/noise-store'
 import { useState } from 'react'
 
-const { addLayer, playAll, stopAll } = useNoiseStore.getState()
+const { addLayer, playAll, stopAll } = useSoundStore.getState()
 
 export function App() {
   const [globalPlaying, setGlobalIsPlaying] = useState(false)
-  const layers = useNoiseStore((s) => s.layers)
+  const layers = useSoundStore((s) => s.layers)
 
   const handlePlayChange = () => {
     if (globalPlaying) {
@@ -21,7 +21,7 @@ export function App() {
   const handleAddLayer = () => {
     const layer = addLayer()
     if (globalPlaying) {
-      layer.noise.play()
+      layer.engine.play()
     }
   }
 

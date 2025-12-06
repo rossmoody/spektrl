@@ -1,19 +1,8 @@
+import type { NoiseLayer } from '@consts/types'
 import { Noise } from '@scripts/noise'
 import { create } from 'zustand'
 
-export interface NoiseLayer {
-  id: string
-  noise: Noise
-  slope: number
-  volume: number
-  pan: number
-  filterFrequency: number
-  isPlaying: boolean
-  isBreathing: boolean
-  isMuted: boolean
-}
-
-export interface NoiseStore {
+export interface SoundStore {
   layers: NoiseLayer[]
   addLayer: () => NoiseLayer
   removeLayer: (id: string) => void
@@ -27,7 +16,7 @@ export interface NoiseStore {
   setMute: (id: string, muted: boolean) => void
 }
 
-export const useNoiseStore = create<NoiseStore>((set, get) => ({
+export const useSoundStore = create<SoundStore>((set, get) => ({
   layers: [],
 
   setMute: (id, muted) => {
@@ -45,7 +34,7 @@ export const useNoiseStore = create<NoiseStore>((set, get) => ({
     set((state) => ({
       layers: state.layers.map((layer) => {
         if (layer.id === id) {
-          layer.noise.applyVolume(volume)
+          layer.engine.applyVolume(volume)
           return { ...layer, volume }
         }
         return layer
@@ -68,7 +57,7 @@ export const useNoiseStore = create<NoiseStore>((set, get) => ({
     set((state) => ({
       layers: state.layers.map((layer) => {
         if (layer.id === id) {
-          layer.noise.applyPan(pan)
+          layer.engine.applyPan(pan)
           return { ...layer, pan }
         }
         return layer
@@ -80,7 +69,7 @@ export const useNoiseStore = create<NoiseStore>((set, get) => ({
     set((state) => ({
       layers: state.layers.map((layer) => {
         if (layer.id === id) {
-          layer.noise.applyFilterFrequency(frequency)
+          layer.engine.applyFilterFrequency(frequency)
           return { ...layer, filterFrequency: frequency }
         }
         return layer
@@ -92,7 +81,7 @@ export const useNoiseStore = create<NoiseStore>((set, get) => ({
     set((state) => ({
       layers: state.layers.map((layer) => {
         if (layer.id === id) {
-          layer.noise.applyBreathe(enabled)
+          layer.engine.applyBreathe(enabled)
           return { ...layer, isBreathing: enabled }
         }
         return layer
@@ -103,8 +92,9 @@ export const useNoiseStore = create<NoiseStore>((set, get) => ({
   addLayer: () => {
     const noise = new Noise()
     const layer: NoiseLayer = {
+      type: 'noise',
       id: crypto.randomUUID(),
-      noise,
+      engine: noise,
       slope: 0,
       volume: 0.25,
       pan: 0,
@@ -119,7 +109,7 @@ export const useNoiseStore = create<NoiseStore>((set, get) => ({
 
   removeLayer: (id) => {
     const layer = get().layers.find((l) => l.id === id)
-    layer?.noise.stop()
+    layer?.engine.stop()
     set((state) => ({ layers: state.layers.filter((l) => l.id !== id) }))
   },
 
@@ -127,7 +117,7 @@ export const useNoiseStore = create<NoiseStore>((set, get) => ({
     set((state) => ({
       layers: state.layers.map((layer) => {
         if (!layer.isMuted) {
-          layer.noise.play(layer.slope)
+          layer.engine.play(layer.slope)
           return { ...layer, isPlaying: true }
         }
         return layer
@@ -138,7 +128,7 @@ export const useNoiseStore = create<NoiseStore>((set, get) => ({
   stopAll: () => {
     set((state) => ({
       layers: state.layers.map((layer) => {
-        layer.noise.stop()
+        layer.engine.stop()
         return { ...layer, isPlaying: false }
       }),
     }))

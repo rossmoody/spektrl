@@ -1,7 +1,7 @@
 import { audioContext } from '@consts/audio-context'
 
 export class Noise {
-  private audioContext: AudioContext
+  audioContext: AudioContext
   private source: AudioBufferSourceNode | null = null
 
   // Signal chain

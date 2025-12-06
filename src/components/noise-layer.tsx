@@ -1,4 +1,5 @@
-import { useNoiseStore, type NoiseLayer } from '@stores/noise-store'
+import { type NoiseLayer } from '@consts/types'
+import { useSoundStore } from '@stores/noise-store'
 import type { ChangeEvent } from 'react'
 
 type HTMLInputChangeEvent = ChangeEvent<HTMLInputElement>
@@ -11,7 +12,7 @@ const {
   toggleBreathe,
   removeLayer,
   setMute,
-} = useNoiseStore.getState()
+} = useSoundStore.getState()
 
 interface NoiseLayerProps {
   layer: NoiseLayer
@@ -23,9 +24,9 @@ export function NoiseLayer({ layer, globalPlaying }: NoiseLayerProps) {
     const isMuted = event.target.checked
     setMute(layer.id, isMuted)
     if (!isMuted && globalPlaying) {
-      layer.noise.play()
+      layer.engine.play()
     } else {
-      layer.noise.stop()
+      layer.engine.stop()
     }
   }
 
