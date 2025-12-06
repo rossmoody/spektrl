@@ -1,19 +1,24 @@
 import { Noise } from '@/scripts/noise'
-import { useSyncExternalStore } from 'react'
+import { useState } from 'react'
 
 type Props = {
   noise: Noise
+  globalPlaying: boolean
 }
 
-export const NoiseCard = ({ noise }: Props) => {
-  const isPlaying = useSyncExternalStore(
-    (callback) => {
-      noise.subscribe(callback)
-      return () => noise.unsubscribe(callback)
-    },
-    () => noise.isPlaying,
-  )
+export const NoiseCard = ({ noise, globalPlaying }: Props) => {
+  const [active, setActive] = useState(noise.active)
 
+  const toggleActive = () => {
+    const next = !active
+    noise.active = next
+    if (next && globalPlaying) {
+      noise.play()
+    } else {
+      noise.stop()
+    }
+    setActive(next)
+  }
   return (
     <fieldset>
       <div>
@@ -25,11 +30,8 @@ export const NoiseCard = ({ noise }: Props) => {
             max="6"
             step="0.1"
             onChange={(e) => {
-              const slope = parseFloat(e.target.value)
-              noise.slope = slope
-              if (noise.isPlaying) {
-                noise.play()
-              }
+              noise.slope = parseFloat(e.target.value)
+              if (noise.active && globalPlaying) noise.play()
             }}
           />
         </label>
@@ -89,9 +91,7 @@ export const NoiseCard = ({ noise }: Props) => {
         </label>
       </div>
 
-      <button onClick={() => noise.toggle()}>
-        {isPlaying ? 'Pause' : 'Play'}
-      </button>
+      <button onClick={toggleActive}>{noise.active ? '⏸️' : '▶️'}</button>
     </fieldset>
   )
 }

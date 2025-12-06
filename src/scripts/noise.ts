@@ -4,6 +4,7 @@ export class Noise {
   // Core
   private audioContext: AudioContext
   private source: AudioBufferSourceNode | null = null
+  public id: string = crypto.randomUUID()
 
   // Signal chain
   private panner: StereoPannerNode
@@ -16,8 +17,8 @@ export class Noise {
   private breatheGain: GainNode
 
   // State
-  private listeners = new Set<() => void>()
   public slope: number = 0
+  public active: boolean = true
 
   constructor() {
     this.audioContext = audioContext
@@ -59,15 +60,6 @@ export class Noise {
 
   // Playback
 
-  toggle() {
-    if (this.isPlaying) {
-      this.stop()
-    } else {
-      this.play()
-    }
-    this.emit()
-  }
-
   play() {
     this.stop()
 
@@ -89,14 +81,12 @@ export class Noise {
     this.source.loop = true
     this.source.connect(this.panner)
     this.source.start()
-    this.emit()
   }
 
   stop() {
     if (this.source) {
       this.source.stop()
       this.source = null
-      this.emit()
     }
   }
 
@@ -133,18 +123,6 @@ export class Noise {
 
   toggleBreathe(enabled: boolean) {
     this.breatheGain.gain.value = enabled ? 0.05 : 0
-  }
-
-  subscribe(listener: () => void) {
-    this.listeners.add(listener)
-  }
-
-  unsubscribe(listener: () => void) {
-    this.listeners.delete(listener)
-  }
-
-  private emit() {
-    for (const listener of this.listeners) listener()
   }
 
   // Audio Processing

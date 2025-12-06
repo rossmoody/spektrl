@@ -4,33 +4,35 @@ import { Noise } from './scripts/noise'
 
 export function App() {
   const [layers, setLayers] = useState<Noise[]>([])
-  const [isPlaying, setIsPlaying] = useState(false)
+  const [globalPlaying, setGlobalPlaying] = useState(false)
 
   const addLayer = () => {
     const noise = new Noise()
     setLayers((prevLayers) => [...prevLayers, noise])
 
-    if (isPlaying) {
+    if (globalPlaying) {
       noise.play()
     }
   }
 
   const toggle = () => {
-    if (isPlaying) {
+    if (globalPlaying) {
       layers.forEach((n) => n.stop())
     } else {
-      layers.forEach((n) => n.play())
+      layers.forEach((n) => {
+        if (n.active) n.play()
+      })
     }
-    setIsPlaying(!isPlaying)
+    setGlobalPlaying(!globalPlaying)
   }
 
   return (
     <div>
-      {layers.map((layer, index) => (
-        <NoiseCard key={index} noise={layer} />
+      {layers.map((layer) => (
+        <NoiseCard key={layer.id} noise={layer} globalPlaying={globalPlaying} />
       ))}
       <button onClick={addLayer}>Add Layer</button>
-      <button onClick={toggle}>{isPlaying ? 'Pause' : 'Play'}</button>
+      <button onClick={toggle}>{globalPlaying ? 'Pause' : 'Play'}</button>
     </div>
   )
 }
