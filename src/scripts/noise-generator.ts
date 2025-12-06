@@ -1,55 +1,75 @@
 export class NoiseGenerator {
-  /**
-   * The AudioContext used for generating and playing noise.
-   */
   private audioContext: AudioContext
-
-  /**
-   * The AudioBufferSourceNode used to play the generated noise.
-   */
   private source: AudioBufferSourceNode | null = null
-
-  /**
-   * For controlling volume in the context of the AudioContext.
-   */
-  private gainNode: GainNode
-
-  /**
-   * To move sound between left and right audio channels.
-   */
+  private volume: GainNode
   private panner: StereoPannerNode
+  private lowPassFilter: BiquadFilterNode
+  private oscillator: OscillatorNode
+  private oscillatorGain: GainNode
+  private breatheOscillator: OscillatorNode
+  private breatheGain: GainNode
 
   constructor() {
     this.audioContext = new AudioContext()
-    this.gainNode = this.audioContext.createGain()
+    this.volume = this.audioContext.createGain()
     this.panner = this.audioContext.createStereoPanner()
+    this.lowPassFilter = this.audioContext.createBiquadFilter()
+    this.oscillator = this.audioContext.createOscillator()
+    this.oscillatorGain = this.audioContext.createGain()
+    this.breatheOscillator = this.audioContext.createOscillator()
+    this.breatheGain = this.audioContext.createGain()
 
-    // Chain: source → panner → gainNode → destination
-    this.panner.connect(this.gainNode)
-    this.gainNode.connect(this.audioContext.destination)
+    // Chain: source → panner → filter → volume → destination
+    this.panner.connect(this.lowPassFilter)
+    this.lowPassFilter.connect(this.volume)
+    this.volume.connect(this.audioContext.destination)
 
-    this.gainNode.gain.value = 0.25
+    // LFO modulates filter frequency | oscillator → gain → filter frequency
+    this.oscillator.connect(this.oscillatorGain)
+    this.oscillatorGain.connect(this.lowPassFilter.frequency)
+    this.oscillator.start()
+
+    // Breathe LFO modulates volume | breatheOscillator → breatheGain → volume gain
+    this.breatheOscillator.connect(this.breatheGain)
+    this.breatheGain.connect(this.volume.gain)
+    this.breatheOscillator.start()
+
+    // Default values
+    this.lowPassFilter.type = 'lowpass'
+    this.lowPassFilter.frequency.value = 15000 // fully open
+    this.volume.gain.value = 0.25
     this.panner.pan.value = 0
+    this.oscillator.frequency.value = 0.1
+    this.oscillatorGain.gain.value = 0
+    this.breatheOscillator.frequency.value = 0.1 // one cycle per 10 seconds
+    this.breatheGain.gain.value = 0
   }
 
-  /**
-   * Sets the pan value for stereo output
-   * @param value -1 (left) to 1 (right)
-   */
+  toggleBreathe(enabled: boolean) {
+    this.breatheGain.gain.value = enabled ? 0.05 : 0
+  }
+
+  toggleOscillator(enabled: boolean) {
+    this.oscillatorGain.gain.value = enabled ? 500 : 0
+  }
+
   setPan(value: number) {
     this.panner.pan.value = value
   }
 
-  /**
-   * Bicorrelates and plays noise with the specified slope. We do this for
-   * both left and right channels to create a stereo effect. Also because
-   * independent noise for each channel sounds better and we pan them.
-   */
   play(slope: number) {
     this.stop()
 
     const leftSamples = this.generateNoise(slope)
     const rightSamples = this.generateNoise(slope)
+
+    // Apply stereo width
+    for (let i = 0; i < leftSamples.length; i++) {
+      const mid = (leftSamples[i] + rightSamples[i]) / 2
+      const side = leftSamples[i] - mid
+      leftSamples[i] = mid + side * 2
+      rightSamples[i] = mid - side * 2
+    }
 
     const buffer = this.audioContext.createBuffer(
       2,
@@ -74,7 +94,20 @@ export class NoiseGenerator {
   }
 
   setVolume(value: number) {
-    this.gainNode.gain.value = value
+    this.volume.gain.value = value
+  }
+
+  setFilterFrequency(frequencyInput: number) {
+    const frequency = 200 * Math.pow(15000 / 200, frequencyInput)
+    this.lowPassFilter.frequency.value = frequency
+  }
+
+  setLfoRate(rate: number) {
+    this.oscillator.frequency.value = rate
+  }
+
+  setLfoDepth(depth: number) {
+    this.oscillatorGain.gain.value = depth
   }
 
   private generateNoise(slope: number): Float32Array {
@@ -193,26 +226,9 @@ export class NoiseGenerator {
     return buffer
   }
 
-  /**
-   * Cleans up and releases audio resources
-   */
   dispose() {
     this.stop()
+    this.oscillator.stop()
     this.audioContext.close()
-  }
-
-  /**
-   * Adds a low pass filter to the audio chain
-   */
-  addLowPassFilter(frequencyInput: number) {
-    const frequency = 200 * Math.pow(15000 / 200, frequencyInput) // Map 0-1 to 200-15000 Hz
-    console.log('Setting low pass filter frequency to:', frequency)
-    const filter = this.audioContext.createBiquadFilter()
-    filter.type = 'lowpass'
-    filter.frequency.value = frequency
-
-    this.gainNode.disconnect()
-    this.gainNode.connect(filter)
-    filter.connect(this.audioContext.destination)
   }
 }

@@ -3,9 +3,6 @@ import { useEffect, useRef, useState } from 'react'
 
 export function App() {
   const [slope, setSlope] = useState(0)
-  const [filterFrequency, setFilterFrequency] = useState(1)
-  const [volume, setVolume] = useState(0.25)
-  const [pan, setPan] = useState(0)
   const [isPlaying, setIsPlaying] = useState(false)
   const noiseRef = useRef<NoiseGenerator | null>(null)
 
@@ -30,26 +27,11 @@ export function App() {
     }
   }
 
-  const handleFilterFrequencyChange = (newFrequency: number) => {
-    setFilterFrequency(newFrequency)
-    noiseRef.current?.addLowPassFilter(newFrequency)
-  }
-
-  const handlePanChange = (newPan: number) => {
-    setPan(newPan)
-    noiseRef.current?.setPan(newPan)
-  }
-
-  const handleVolumeChange = (newVolume: number) => {
-    setVolume(newVolume)
-    noiseRef.current?.setVolume(newVolume)
-  }
-
   return (
     <div>
       <div>
         <label>
-          Color
+          Color: {slope}
           <input
             type="range"
             min="-6"
@@ -69,9 +51,9 @@ export function App() {
             min="0"
             max="1"
             step="0.01"
-            value={filterFrequency}
+            defaultValue={1}
             onChange={(e) =>
-              handleFilterFrequencyChange(parseFloat(e.target.value))
+              noiseRef.current?.setFilterFrequency(parseFloat(e.target.value))
             }
           />
         </label>
@@ -85,8 +67,10 @@ export function App() {
             min="0"
             max="1"
             step="0.01"
-            value={volume}
-            onChange={(e) => handleVolumeChange(parseFloat(e.target.value))}
+            defaultValue={0.25}
+            onChange={(e) =>
+              noiseRef.current?.setVolume(parseFloat(e.target.value))
+            }
           />
         </label>
       </div>
@@ -99,8 +83,20 @@ export function App() {
             min="-1"
             max="1"
             step="0.01"
-            value={pan}
-            onChange={(e) => handlePanChange(parseFloat(e.target.value))}
+            defaultValue={0}
+            onChange={(e) =>
+              noiseRef.current?.setPan(parseFloat(e.target.value))
+            }
+          />
+        </label>
+      </div>
+
+      <div>
+        <label>
+          Breathe
+          <input
+            type="checkbox"
+            onChange={(e) => noiseRef.current?.toggleBreathe(e.target.checked)}
           />
         </label>
       </div>
