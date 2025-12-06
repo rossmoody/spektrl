@@ -1,5 +1,5 @@
 import type { NoiseLayer } from '@consts/types'
-import { Noise } from '@scripts/noise'
+import { NoiseGenerator } from '@scripts/noise-generator'
 import { create } from 'zustand'
 
 export interface SoundStore {
@@ -90,7 +90,7 @@ export const useSoundStore = create<SoundStore>((set, get) => ({
   },
 
   addLayer: () => {
-    const noise = new Noise()
+    const noise = new NoiseGenerator()
     const layer: NoiseLayer = {
       type: 'noise',
       id: crypto.randomUUID(),

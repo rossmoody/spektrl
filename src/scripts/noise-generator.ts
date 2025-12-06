@@ -1,6 +1,6 @@
 import { audioContext } from '@consts/audio-context'
 
-export class Noise {
+export class NoiseGenerator {
   audioContext: AudioContext
   private source: AudioBufferSourceNode | null = null
 

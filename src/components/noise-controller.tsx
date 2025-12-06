@@ -14,12 +14,15 @@ const {
   setMute,
 } = useSoundStore.getState()
 
-interface NoiseLayerProps {
+interface NoiseControllerProps {
   layer: NoiseLayer
   globalPlaying: boolean
 }
 
-export function NoiseLayer({ layer, globalPlaying }: NoiseLayerProps) {
+export function NoiseController({
+  layer,
+  globalPlaying,
+}: NoiseControllerProps) {
   const handleMuteChange = (event: HTMLInputChangeEvent) => {
     const isMuted = event.target.checked
     setMute(layer.id, isMuted)

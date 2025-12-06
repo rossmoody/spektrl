@@ -1,4 +1,4 @@
-import type { Noise } from '@scripts/noise'
+import type { NoiseGenerator } from '@scripts/noise-generator'
 
 export interface BaseLayer {
   id: string
@@ -11,7 +11,7 @@ export interface BaseLayer {
 
 export interface NoiseLayer extends BaseLayer {
   type: 'noise'
-  engine: Noise
+  engine: NoiseGenerator
   slope: number
   filterFrequency: number
   isBreathing: boolean

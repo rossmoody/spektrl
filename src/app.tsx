@@ -1,5 +1,5 @@
 // App.tsx
-import { NoiseLayer } from '@components/noise-layer'
+import { NoiseController } from '@components/noise-controller'
 import { useSoundStore } from '@stores/noise-store'
 import { useState } from 'react'
 
@@ -28,7 +28,7 @@ export function App() {
   return (
     <div>
       {layers.map((layer) => (
-        <NoiseLayer
+        <NoiseController
           key={layer.id}
           layer={layer}
           globalPlaying={globalPlaying}
