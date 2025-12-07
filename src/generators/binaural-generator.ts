@@ -1,5 +1,5 @@
 import { AUDIO_CONTEXT } from '@consts/audio-context'
-import { BINAURAL_DEFAULTS } from '@consts/defaults'
+import { BINAURAL_DEFAULTS } from './binaural-layer'
 
 export class BinauralGenerator {
   private audioContext: AudioContext

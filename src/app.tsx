@@ -1,75 +1,31 @@
-// App.tsx
 import { BinauralController } from '@components/binaural-controller'
 import { NoiseController } from '@components/noise-controller'
-import { useSoundStore } from '@stores/noise-store'
-import { useState } from 'react'
+import { createBinauralLayer } from '@generators/binaural-layer'
+import { createNoiseLayer } from '@generators/noise-layer'
+import { useSoundStore } from '@stores/sound-store'
 
-const { addNoiseLayer, addBinauralLayer, playAll, stopAll, reset } =
-  useSoundStore.getState()
+const { addLayer, playAll, stopAll } = useSoundStore.getState()
 
 export function App() {
-  const [globalPlaying, setGlobalIsPlaying] = useState(false)
   const layers = useSoundStore((s) => s.layers)
-
-  const handlePlayChange = () => {
-    globalPlaying ? stopAll() : playAll()
-    setGlobalIsPlaying(!globalPlaying)
-  }
-
-  const handleAddNoiseLayer = () => {
-    const layer = addNoiseLayer()
-    if (globalPlaying) {
-      layer.engine.play()
-    }
-  }
-
-  const handleAddBinauralLayer = () => {
-    const layer = addBinauralLayer()
-    if (globalPlaying) {
-      layer.engine.play()
-    }
-  }
-
-  const handleReset = () => {
-    reset()
-    setGlobalIsPlaying(false)
-  }
 
   return (
     <div>
       {layers.map((layer) => {
         switch (layer.type) {
-          case 'noise': {
-            return (
-              <NoiseController
-                key={layer.id}
-                layer={layer}
-                globalPlaying={globalPlaying}
-              />
-            )
-          }
-          case 'binaural': {
-            return (
-              <BinauralController
-                key={layer.id}
-                layer={layer}
-                globalPlaying={globalPlaying}
-              />
-            )
-          }
-          default:
-            return null
+          case 'noise':
+            return <NoiseController key={layer.id} layer={layer} />
+          case 'binaural':
+            return <BinauralController key={layer.id} layer={layer} />
         }
       })}
 
-      <div style={{ marginTop: '4px', display: 'flex', gap: '10px' }}>
-        <button onClick={handleAddNoiseLayer}>Add Noise Layer</button>
-        <button onClick={handleAddBinauralLayer}>Add Binaural Layer</button>
-        <button onClick={handlePlayChange}>
-          {globalPlaying ? 'Stop' : 'Play'}
-        </button>
-        <button onClick={handleReset}>Reset</button>
-      </div>
+      <button onClick={() => addLayer(createNoiseLayer())}>Add Noise</button>
+      <button onClick={() => addLayer(createBinauralLayer())}>
+        Add Binaural
+      </button>
+      <button onClick={playAll}>Play</button>
+      <button onClick={stopAll}>Stop</button>
     </div>
   )
 }

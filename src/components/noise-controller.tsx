@@ -1,152 +1,85 @@
-import { type NoiseLayer } from '@consts/types'
-import { useSoundStore } from '@stores/noise-store'
-import type { ChangeEvent } from 'react'
+// Noise/NoiseController.tsx
 
-type HTMLInputChangeEvent = ChangeEvent<HTMLInputElement>
+import type { NoiseLayer } from '@generators/noise-layer'
+import { useSoundStore } from '@stores/sound-store'
 
-const {
-  setVolume,
-  setNoisePan: setPan,
-  setNoiseSlope: setSlope,
-  setNoiseFilterFrequency: setFilterFrequency,
-  toggleNoiseBreathe: toggleBreathe,
-  removeLayer,
-  setMute,
-} = useSoundStore.getState()
+const { updateLayer, removeLayer } = useSoundStore.getState()
 
-interface NoiseControllerProps {
+interface Props {
   layer: NoiseLayer
-  globalPlaying: boolean
 }
 
-export function NoiseController({
-  layer,
-  globalPlaying,
-}: NoiseControllerProps) {
-  const handleMuteChange = (event: HTMLInputChangeEvent) => {
-    const isMuted = event.target.checked
-    setMute(layer.id, isMuted)
-    if (!isMuted && globalPlaying) {
-      layer.engine.play(layer.slope)
-    } else {
-      layer.engine.stop()
-    }
-  }
-
-  const handleColorChange = (event: HTMLInputChangeEvent) => {
-    const slope = parseFloat(event.target.value)
-    setSlope(layer.id, slope)
-    if (globalPlaying && !layer.isMuted) {
-      layer.engine.play(slope)
-    }
-  }
-
-  const handleRemoveLayer = () => {
-    removeLayer(layer.id)
-  }
-
-  const handleVolumeChange = (event: HTMLInputChangeEvent) => {
-    const volume = parseFloat(event.target.value)
-    setVolume(layer.id, volume)
-  }
-
-  const handlePanChange = (event: HTMLInputChangeEvent) => {
-    const pan = parseFloat(event.target.value)
-    setPan(layer.id, pan)
-  }
-
-  const handleFilterFrequencyChange = (event: HTMLInputChangeEvent) => {
-    const frequency = parseFloat(event.target.value)
-    setFilterFrequency(layer.id, frequency)
-  }
-
-  const handleBreatheChange = (event: HTMLInputChangeEvent) => {
-    const enabled = event.target.checked
-    toggleBreathe(layer.id, enabled)
-  }
+export function NoiseController({ layer }: Props) {
+  const id = layer.id
 
   return (
     <fieldset>
-      <p>Noise Layer</p>
-      <div>
-        <label>
-          Color {layer.slope}
-          <input
-            type="range"
-            min="-6"
-            max="6"
-            step="0.1"
-            value={layer.slope}
-            onChange={handleColorChange}
-          />
-        </label>
-      </div>
+      <legend>Noise</legend>
 
-      <div>
-        <label>
-          Filter Frequency {layer.filterFrequency}
-          <input
-            type="range"
-            min="0"
-            max="1"
-            step="0.05"
-            value={layer.filterFrequency}
-            onChange={handleFilterFrequencyChange}
-          />
-        </label>
-      </div>
+      <label>
+        Volume
+        <input
+          type="range"
+          min={0}
+          max={1}
+          step={0.01}
+          value={layer.volume}
+          onChange={(e) =>
+            updateLayer(id, { volume: parseFloat(e.target.value) })
+          }
+        />
+      </label>
 
-      <div>
-        <label>
-          Volume {layer.volume}
-          <input
-            type="range"
-            min="0"
-            max="1"
-            step="0.05"
-            value={layer.volume}
-            onChange={handleVolumeChange}
-          />
-        </label>
-      </div>
+      <label>
+        Color
+        <input
+          type="range"
+          min={-6}
+          max={6}
+          step={0.1}
+          value={layer.slope}
+          onChange={(e) =>
+            updateLayer(id, { slope: parseFloat(e.target.value) })
+          }
+        />
+      </label>
 
-      <div>
-        <label>
-          Pan {layer.pan}
-          <input
-            type="range"
-            min="-1"
-            max="1"
-            step="0.05"
-            value={layer.pan}
-            onChange={handlePanChange}
-          />
-        </label>
-      </div>
+      <label>
+        Pan
+        <input
+          type="range"
+          min={-1}
+          max={1}
+          step={0.01}
+          value={layer.pan}
+          onChange={(e) => updateLayer(id, { pan: parseFloat(e.target.value) })}
+        />
+      </label>
 
-      <div>
-        <label>
-          Breathe
-          <input
-            type="checkbox"
-            checked={layer.isBreathing}
-            onChange={handleBreatheChange}
-          />
-        </label>
-      </div>
+      <label>
+        Filter
+        <input
+          type="range"
+          min={0}
+          max={1}
+          step={0.01}
+          value={layer.filterFrequency}
+          onChange={(e) =>
+            updateLayer(id, { filterFrequency: parseFloat(e.target.value) })
+          }
+        />
+      </label>
 
-      <div>
-        <label>
-          Mute
-          <input
-            type="checkbox"
-            checked={layer.isMuted}
-            onChange={handleMuteChange}
-          />
-        </label>
-      </div>
+      <label>
+        Breathe
+        <input
+          type="checkbox"
+          checked={layer.isBreathing}
+          onChange={(e) => updateLayer(id, { isBreathing: e.target.checked })}
+        />
+      </label>
 
-      <button onClick={handleRemoveLayer}>Remove Layer</button>
+      <button onClick={() => removeLayer(id)}>Remove</button>
     </fieldset>
   )
 }

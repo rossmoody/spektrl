@@ -1,152 +1,86 @@
-import { type BinauralLayer } from '@consts/types'
-import { useSoundStore } from '@stores/noise-store'
-import type { ChangeEvent } from 'react'
+import type { BinauralLayer } from '@generators/binaural-layer'
+import { useSoundStore } from '@stores/sound-store'
 
-type HTMLInputChangeEvent = ChangeEvent<HTMLInputElement>
-
-const {
-  setVolume,
-  removeLayer,
-  setMute,
-  setCarrierFrequency,
-  setBeatFrequency,
-  setWaveform,
-} = useSoundStore.getState()
+const { updateLayer, removeLayer } = useSoundStore.getState()
 
 interface BinauralControllerProps {
   layer: BinauralLayer
-  globalPlaying: boolean
 }
 
-export function BinauralController({
-  layer,
-  globalPlaying,
-}: BinauralControllerProps) {
-  const handleMuteChange = (event: HTMLInputChangeEvent) => {
-    const isMuted = event.target.checked
-    setMute(layer.id, isMuted)
-
-    if (!isMuted && globalPlaying) {
-      layer.engine.play(
-        layer.carrierFrequency,
-        layer.beatFrequency,
-        layer.waveform,
-      )
-    } else {
-      layer.engine.stop()
-    }
-  }
-
-  const resetSound = () => {
-    const currentLayer = useSoundStore
-      .getState()
-      .layers.find((l) => l.id === layer.id)
-    if (
-      !currentLayer ||
-      currentLayer.type !== 'binaural' ||
-      currentLayer.isMuted ||
-      !globalPlaying
-    )
-      return
-
-    currentLayer.engine.play(
-      currentLayer.carrierFrequency,
-      currentLayer.beatFrequency,
-      currentLayer.waveform,
-    )
-  }
-
-  const handleRemoveLayer = () => {
-    removeLayer(layer.id)
-  }
-
-  const handleVolumeChange = (event: HTMLInputChangeEvent) => {
-    const volume = parseFloat(event.target.value)
-    setVolume(layer.id, volume)
-  }
-
-  const handleCarrierFrequencyChange = (event: HTMLInputChangeEvent) => {
-    const carrierFrequency = parseFloat(event.target.value)
-    setCarrierFrequency(layer.id, carrierFrequency)
-    resetSound()
-  }
-
-  const handleBeatFrequencyChange = (event: HTMLInputChangeEvent) => {
-    const beatFrequency = parseFloat(event.target.value)
-    setBeatFrequency(layer.id, beatFrequency)
-    resetSound()
-  }
-
-  const handleWaveformChange = (event: ChangeEvent<HTMLSelectElement>) => {
-    const waveform = event.target.value as BinauralLayer['waveform']
-    setWaveform(layer.id, waveform)
-    resetSound()
-  }
+export function BinauralController({ layer }: BinauralControllerProps) {
+  const id = layer.id
 
   return (
     <fieldset>
-      <p>Binaural Layer</p>
-      <div>
-        <label>
-          Volume {layer.volume}
-          <input
-            type="range"
-            min="0"
-            max=".95"
-            step="0.05"
-            value={layer.volume}
-            onChange={handleVolumeChange}
-          />
-        </label>
-      </div>
-      <div>
-        <label>
-          Carrier Frequency (Hz) {layer.carrierFrequency}
-          <input
-            type="range"
-            min="1"
-            max="500"
-            value={layer.carrierFrequency}
-            onChange={handleCarrierFrequencyChange}
-          />
-        </label>
-      </div>
-      <div>
-        <label>
-          Beat Frequency (Hz) {layer.beatFrequency}
-          <input
-            type="range"
-            min="0.1"
-            max="40"
-            step="0.1"
-            value={layer.beatFrequency}
-            onChange={handleBeatFrequencyChange}
-          />
-        </label>
-      </div>
-      <div>
-        <label>
-          Waveform
-          <select value={layer.waveform} onChange={handleWaveformChange}>
-            <option value="sine">Sine</option>
-            <option value="square">Square</option>
-            <option value="sawtooth">Sawtooth</option>
-            <option value="triangle">Triangle</option>
-          </select>
-        </label>
-      </div>
+      <legend>Binaural</legend>
 
-      <div>
-        <label>
-          Mute
-          <input
-            type="checkbox"
-            checked={layer.isMuted}
-            onChange={handleMuteChange}
-          />
-        </label>
-      </div>
-      <button onClick={handleRemoveLayer}>Remove Layer</button>
+      <label>
+        Volume {layer.volume}
+        <input
+          type="range"
+          min={0}
+          max={0.95}
+          step={0.05}
+          value={layer.volume}
+          onChange={(e) =>
+            updateLayer(id, { volume: parseFloat(e.target.value) })
+          }
+        />
+      </label>
+
+      <label>
+        Carrier Frequency {layer.carrierFrequency} Hz
+        <input
+          type="range"
+          min={100}
+          max={500}
+          step={10}
+          value={layer.carrierFrequency}
+          onChange={(e) =>
+            updateLayer(id, { carrierFrequency: parseFloat(e.target.value) })
+          }
+        />
+      </label>
+
+      <label>
+        Beat Frequency {layer.beatFrequency} Hz
+        <input
+          type="range"
+          min={1}
+          max={40}
+          step={0.5}
+          value={layer.beatFrequency}
+          onChange={(e) =>
+            updateLayer(id, { beatFrequency: parseFloat(e.target.value) })
+          }
+        />
+      </label>
+
+      <label>
+        Waveform
+        <select
+          value={layer.waveform}
+          onChange={(e) =>
+            updateLayer(id, { waveform: e.target.value as OscillatorType })
+          }
+        >
+          <option value="sine">Sine</option>
+          <option value="triangle">Triangle</option>
+          <option value="square">Square</option>
+          <option value="sawtooth">Sawtooth</option>
+        </select>
+      </label>
+
+      <label>
+        Mute
+        <input
+          type="checkbox"
+          checked={layer.isMuted}
+          onChange={(e) => updateLayer(id, { isMuted: e.target.checked })}
+        />
+      </label>
+
+      <button onClick={() => removeLayer(id)}>Remove</button>
     </fieldset>
   )
 }
