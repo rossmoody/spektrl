@@ -91,9 +91,11 @@ export class BinauralGenerator {
 
   /**
    * Changes how fast the perceived pulse is — the brain entrainment part.
-   * 4 Hz:  Slow pulse .... .... .... (theta, drowsy/meditative)
-   * 10 Hz: Medium pulse .. .. .. .. (alpha, relaxed focus)
-   * 25 Hz: Fast pulse .... (beta, alert)
+   * 1–4 Hz Delta — deep sleep, healing
+   * 4–8 Hz Theta — meditation, drowsiness, creativity
+   * 8–13 Hz Alpha — relaxed focus, calm
+   * 13–30 Hz Beta — alertness, concentration
+   * 30–40 Hz Gamma — peak focus, learning
    */
   applyBeatFrequency(carrier: number, beat: number) {
     if (this.rightOscillator) {

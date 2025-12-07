@@ -66,12 +66,9 @@ export function App() {
         }
       })}
 
-      <div>
+      <div style={{ marginTop: '4px', display: 'flex', gap: '10px' }}>
         <button onClick={handleAddNoiseLayer}>Add Noise Layer</button>
         <button onClick={handleAddBinauralLayer}>Add Binaural Layer</button>
-      </div>
-
-      <div>
         <button onClick={handlePlayChange}>
           {globalPlaying ? 'Stop' : 'Play'}
         </button>

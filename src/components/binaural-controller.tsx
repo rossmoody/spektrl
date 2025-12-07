@@ -92,7 +92,7 @@ export function BinauralController({
           <input
             type="range"
             min="0"
-            max="1"
+            max=".95"
             step="0.05"
             value={layer.volume}
             onChange={handleVolumeChange}
@@ -104,7 +104,7 @@ export function BinauralController({
           Carrier Frequency (Hz) {layer.carrierFrequency}
           <input
             type="range"
-            min="0"
+            min="1"
             max="500"
             value={layer.carrierFrequency}
             onChange={handleCarrierFrequencyChange}
@@ -117,7 +117,7 @@ export function BinauralController({
           <input
             type="range"
             min="0.1"
-            max="20"
+            max="40"
             step="0.1"
             value={layer.beatFrequency}
             onChange={handleBeatFrequencyChange}
