@@ -1,4 +1,5 @@
 import { audioContext } from '@consts/audio-context'
+import { BINAURAL_DEFAULTS } from '@consts/defaults'
 
 export class BinauralGenerator {
   private audioContext: AudioContext
@@ -32,7 +33,7 @@ export class BinauralGenerator {
     // Defaults
     this.leftGain.gain.value = 1
     this.rightGain.gain.value = 1
-    this.volumeNode.gain.value = 0.15
+    this.volumeNode.gain.value = BINAURAL_DEFAULTS.volume
     this.filter.type = 'lowpass'
     this.filter.frequency.value = 1000
   }
@@ -40,7 +41,7 @@ export class BinauralGenerator {
   play(
     carrierFrequency: number,
     beatFrequency: number,
-    waveform: OscillatorType = 'sine',
+    waveform: OscillatorType = BINAURAL_DEFAULTS.waveform,
   ) {
     this.stop()
 

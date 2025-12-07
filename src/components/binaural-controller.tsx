@@ -48,8 +48,8 @@ export function BinauralController({
             type="range"
             min="0"
             max="1"
-            step="0.01"
-            defaultValue={0.25}
+            step="0.05"
+            value={layer.volume}
             onChange={handleVolumeChange}
           />
         </label>
@@ -57,7 +57,11 @@ export function BinauralController({
 
       <label>
         Mute
-        <input type="checkbox" onChange={handleMuteChange} />
+        <input
+          type="checkbox"
+          checked={layer.isMuted}
+          onChange={handleMuteChange}
+        />
       </label>
       <button onClick={handleRemoveLayer}>Remove Layer</button>
     </fieldset>
