@@ -23,7 +23,7 @@ export function BinauralController({ layer }: BinauralControllerProps) {
           step={0.05}
           value={layer.volume}
           onChange={(e) =>
-            updateLayer(id, { volume: parseFloat(e.target.value) })
+            updateLayer(id, 'binaural', { volume: parseFloat(e.target.value) })
           }
         />
       </label>
@@ -37,7 +37,9 @@ export function BinauralController({ layer }: BinauralControllerProps) {
           step={10}
           value={layer.carrierFrequency}
           onChange={(e) =>
-            updateLayer(id, { carrierFrequency: parseFloat(e.target.value) })
+            updateLayer(id, 'binaural', {
+              carrierFrequency: parseFloat(e.target.value),
+            })
           }
         />
       </label>
@@ -51,7 +53,9 @@ export function BinauralController({ layer }: BinauralControllerProps) {
           step={0.5}
           value={layer.beatFrequency}
           onChange={(e) =>
-            updateLayer(id, { beatFrequency: parseFloat(e.target.value) })
+            updateLayer(id, 'binaural', {
+              beatFrequency: parseFloat(e.target.value),
+            })
           }
         />
       </label>
@@ -61,7 +65,9 @@ export function BinauralController({ layer }: BinauralControllerProps) {
         <select
           value={layer.waveform}
           onChange={(e) =>
-            updateLayer(id, { waveform: e.target.value as OscillatorType })
+            updateLayer(id, 'binaural', {
+              waveform: e.target.value as OscillatorType,
+            })
           }
         >
           <option value="sine">Sine</option>
@@ -76,7 +82,9 @@ export function BinauralController({ layer }: BinauralControllerProps) {
         <input
           type="checkbox"
           checked={layer.isMuted}
-          onChange={(e) => updateLayer(id, { isMuted: e.target.checked })}
+          onChange={(e) =>
+            updateLayer(id, 'binaural', { isMuted: e.target.checked })
+          }
         />
       </label>
 

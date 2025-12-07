@@ -16,7 +16,11 @@ export interface SoundStore {
   layers: SoundLayer[]
   addLayer: (layer: SoundLayer) => void
   removeLayer: (id: string) => void
-  updateLayer: (id: string, updates: Partial<SoundLayer>) => void
+  updateLayer: <T extends SoundLayer['type']>(
+    id: string,
+    type: T,
+    updates: Partial<Extract<SoundLayer, { type: T }>>,
+  ) => void
   playAll: () => void
   stopAll: () => void
   reset: () => void
@@ -53,12 +57,12 @@ export const useSoundStore = create<SoundStore>((set, get) => ({
     set((state) => ({ layers: state.layers.filter((l) => l.id !== id) }))
   },
 
-  updateLayer: (id, updates) => {
+  updateLayer: (id, type, updates) => {
     set((state) => ({
       layers: state.layers.map((layer) => {
-        if (layer.id !== id) return layer
-        applyUpdates(layer, updates)
-        return layer
+        if (layer.id !== id || layer.type !== type) return layer
+        applyUpdates(layer, updates as any)
+        return { ...layer, ...updates }
       }),
     }))
   },

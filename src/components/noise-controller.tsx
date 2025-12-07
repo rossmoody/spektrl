@@ -25,7 +25,7 @@ export function NoiseController({ layer }: Props) {
           step={0.01}
           value={layer.volume}
           onChange={(e) =>
-            updateLayer(id, { volume: parseFloat(e.target.value) })
+            updateLayer(id, 'noise', { volume: parseFloat(e.target.value) })
           }
         />
       </label>
@@ -39,7 +39,7 @@ export function NoiseController({ layer }: Props) {
           step={0.1}
           value={layer.slope}
           onChange={(e) =>
-            updateLayer(id, { slope: parseFloat(e.target.value) })
+            updateLayer(id, 'noise', { slope: parseFloat(e.target.value) })
           }
         />
       </label>
@@ -52,7 +52,9 @@ export function NoiseController({ layer }: Props) {
           max={1}
           step={0.01}
           value={layer.pan}
-          onChange={(e) => updateLayer(id, { pan: parseFloat(e.target.value) })}
+          onChange={(e) =>
+            updateLayer(id, 'noise', { pan: parseFloat(e.target.value) })
+          }
         />
       </label>
 
@@ -65,7 +67,9 @@ export function NoiseController({ layer }: Props) {
           step={0.01}
           value={layer.filterFrequency}
           onChange={(e) =>
-            updateLayer(id, { filterFrequency: parseFloat(e.target.value) })
+            updateLayer(id, 'noise', {
+              filterFrequency: parseFloat(e.target.value),
+            })
           }
         />
       </label>
@@ -75,7 +79,9 @@ export function NoiseController({ layer }: Props) {
         <input
           type="checkbox"
           checked={layer.isBreathing}
-          onChange={(e) => updateLayer(id, { isBreathing: e.target.checked })}
+          onChange={(e) =>
+            updateLayer(id, 'noise', { isBreathing: e.target.checked })
+          }
         />
       </label>
 
