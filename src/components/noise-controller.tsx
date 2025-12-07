@@ -14,7 +14,7 @@ export function NoiseController({ layer }: Props) {
 
   return (
     <fieldset>
-      <legend>Noise</legend>
+      <p>Noise</p>
 
       <label>
         Volume
@@ -24,9 +24,9 @@ export function NoiseController({ layer }: Props) {
           max={1}
           step={0.01}
           value={layer.volume}
-          onChange={(e) =>
+          onChange={(e) => {
             updateLayer(id, 'noise', { volume: parseFloat(e.target.value) })
-          }
+          }}
         />
       </label>
 
@@ -81,6 +81,17 @@ export function NoiseController({ layer }: Props) {
           checked={layer.isBreathing}
           onChange={(e) =>
             updateLayer(id, 'noise', { isBreathing: e.target.checked })
+          }
+        />
+      </label>
+
+      <label>
+        Mute
+        <input
+          type="checkbox"
+          checked={layer.isMuted}
+          onChange={(e) =>
+            updateLayer(id, 'noise', { isMuted: e.target.checked })
           }
         />
       </label>

@@ -37,16 +37,34 @@ export function playNoiseLayer(layer: NoiseLayer) {
   layer.engine.play(layer.slope)
 }
 
+export function muteNoiseLayer(layer: NoiseLayer) {
+  layer.engine.stop()
+}
+
 export function applyNoiseUpdates(
   layer: NoiseLayer,
   updates: Partial<NoiseLayer>,
 ) {
-  if (updates.volume !== undefined) layer.engine.applyVolume(updates.volume)
-  if (updates.pan !== undefined) layer.engine.applyPan(updates.pan)
-  if (updates.filterFrequency !== undefined)
+  if (updates.volume !== undefined) {
+    layer.engine.applyVolume(updates.volume)
+  }
+  if (updates.pan !== undefined) {
+    layer.engine.applyPan(updates.pan)
+  }
+  if (updates.filterFrequency !== undefined) {
     layer.engine.applyFilterFrequency(updates.filterFrequency)
-  if (updates.isBreathing !== undefined)
+  }
+  if (updates.isBreathing !== undefined) {
     layer.engine.applyBreathe(updates.isBreathing)
-  if (updates.slope !== undefined && layer.isPlaying)
+  }
+  if (updates.slope !== undefined && layer.isPlaying) {
     layer.engine.play(updates.slope)
+  }
+  if (updates.isMuted !== undefined) {
+    if (updates.isMuted) {
+      layer.engine.stop()
+    } else if (layer.isPlaying) {
+      layer.engine.play(layer.slope)
+    }
+  }
 }

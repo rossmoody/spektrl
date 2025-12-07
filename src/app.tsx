@@ -25,7 +25,7 @@ export function App() {
         Add Binaural
       </button>
       <button onClick={playAll}>Play</button>
-      <button onClick={stopAll}>Stop</button>
+      <button onClick={stopAll}>Pause</button>
     </div>
   )
 }

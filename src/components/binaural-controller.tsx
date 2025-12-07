@@ -12,7 +12,7 @@ export function BinauralController({ layer }: BinauralControllerProps) {
 
   return (
     <fieldset>
-      <legend>Binaural</legend>
+      <p>Binaural</p>
 
       <label>
         Volume {layer.volume}

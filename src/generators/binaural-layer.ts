@@ -35,6 +35,10 @@ export function playBinauralLayer(layer: BinauralLayer) {
   layer.engine.play(layer.carrierFrequency, layer.beatFrequency, layer.waveform)
 }
 
+export function muteBinauralLayer(layer: BinauralLayer) {
+  layer.engine.stop()
+}
+
 export function applyBinauralUpdates(
   layer: BinauralLayer,
   updates: Partial<BinauralLayer>,
