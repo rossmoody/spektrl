@@ -65,12 +65,18 @@ export function App() {
             return null
         }
       })}
-      <button onClick={handleAddNoiseLayer}>Add Noise Layer</button>
-      <button onClick={handleAddBinauralLayer}>Add Binaural Layer</button>
-      <button onClick={handlePlayChange}>
-        {globalPlaying ? 'Stop' : 'Play'}
-      </button>
-      <button onClick={handleReset}>Reset</button>
+
+      <div>
+        <button onClick={handleAddNoiseLayer}>Add Noise Layer</button>
+        <button onClick={handleAddBinauralLayer}>Add Binaural Layer</button>
+      </div>
+
+      <div>
+        <button onClick={handlePlayChange}>
+          {globalPlaying ? 'Stop' : 'Play'}
+        </button>
+        <button onClick={handleReset}>Reset</button>
+      </div>
     </div>
   )
 }

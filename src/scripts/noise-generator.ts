@@ -99,7 +99,7 @@ export class NoiseGenerator {
   }
 
   applyBreathe(enabled: boolean) {
-    this.breatheGain.gain.value = enabled ? 0.05 : 0
+    this.breatheGain.gain.value = enabled ? 0.07 : 0
   }
 
   // Audio Processing
