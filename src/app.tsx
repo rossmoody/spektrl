@@ -4,7 +4,7 @@ import { NoiseController } from '@components/noise-controller'
 import { useSoundStore } from '@stores/noise-store'
 import { useState } from 'react'
 
-const { addNoiseLayer, addBinauralLayer, playAll, stopAll } =
+const { addNoiseLayer, addBinauralLayer, playAll, stopAll, reset } =
   useSoundStore.getState()
 
 export function App() {
@@ -32,6 +32,11 @@ export function App() {
     if (globalPlaying) {
       layer.engine.play()
     }
+  }
+
+  const handleReset = () => {
+    reset()
+    setGlobalIsPlaying(false)
   }
 
   return (
@@ -65,6 +70,7 @@ export function App() {
       <button onClick={handlePlayChange}>
         {globalPlaying ? 'Stop' : 'Play'}
       </button>
+      <button onClick={handleReset}>Reset</button>
     </div>
   )
 }

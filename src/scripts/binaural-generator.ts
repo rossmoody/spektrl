@@ -39,8 +39,8 @@ export class BinauralGenerator {
   }
 
   play(
-    carrierFrequency: number,
-    beatFrequency: number,
+    carrierFrequency: number = BINAURAL_DEFAULTS.carrierFrequency,
+    beatFrequency: number = BINAURAL_DEFAULTS.beatFrequency,
     waveform: OscillatorType = BINAURAL_DEFAULTS.waveform,
   ) {
     this.stop()

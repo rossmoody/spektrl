@@ -17,10 +17,55 @@ export interface SoundStore {
   setNoisePan: (id: string, pan: number) => void
   setNoiseFilterFrequency: (id: string, frequency: number) => void
   toggleNoiseBreathe: (id: string, enabled: boolean) => void
+  setCarrierFrequency: (id: string, frequency: number) => void
+  setBeatFrequency: (id: string, frequency: number) => void
+  setWaveform: (id: string, waveform: OscillatorType) => void
+  reset: () => void
 }
 
 export const useSoundStore = create<SoundStore>((set, get) => ({
   layers: [],
+
+  reset: () => {
+    const state = get()
+    state.layers.forEach((layer) => {
+      layer.engine.stop()
+    })
+    set({ layers: [] })
+  },
+
+  setCarrierFrequency: (id, frequency) => {
+    set((state) => ({
+      layers: state.layers.map((layer) => {
+        if (layer.id !== id) return layer
+        if (layer.type !== 'binaural') return layer
+
+        return { ...layer, carrierFrequency: frequency }
+      }),
+    }))
+  },
+
+  setBeatFrequency: (id, frequency) => {
+    set((state) => ({
+      layers: state.layers.map((layer) => {
+        if (layer.id !== id) return layer
+        if (layer.type !== 'binaural') return layer
+
+        return { ...layer, beatFrequency: frequency }
+      }),
+    }))
+  },
+
+  setWaveform: (id, waveform) => {
+    set((state) => ({
+      layers: state.layers.map((layer) => {
+        if (layer.id !== id) return layer
+        if (layer.type !== 'binaural') return layer
+
+        return { ...layer, waveform }
+      }),
+    }))
+  },
 
   setMute: (id, muted) => {
     set((state) => ({
