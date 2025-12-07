@@ -1,4 +1,4 @@
-import { audioContext } from '@consts/audio-context'
+import { AUDIO_CONTEXT } from '@consts/audio-context'
 
 export class NoiseGenerator {
   private audioContext: AudioContext
@@ -15,7 +15,7 @@ export class NoiseGenerator {
   private breatheGain: GainNode
 
   constructor() {
-    this.audioContext = audioContext
+    this.audioContext = AUDIO_CONTEXT
 
     // Create nodes
     this.panner = this.audioContext.createStereoPanner()

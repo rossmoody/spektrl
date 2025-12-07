@@ -1,4 +1,4 @@
-import { audioContext } from '@consts/audio-context'
+import { AUDIO_CONTEXT } from '@consts/audio-context'
 import { BINAURAL_DEFAULTS } from '@consts/defaults'
 
 export class BinauralGenerator {
@@ -14,7 +14,7 @@ export class BinauralGenerator {
   private filter: BiquadFilterNode
 
   constructor() {
-    this.audioContext = audioContext
+    this.audioContext = AUDIO_CONTEXT
 
     // Create nodes
     this.leftGain = this.audioContext.createGain()

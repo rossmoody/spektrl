@@ -36,7 +36,9 @@ export function NoiseController({
   const handleColorChange = (event: HTMLInputChangeEvent) => {
     const slope = parseFloat(event.target.value)
     setSlope(layer.id, slope)
-    layer.engine.play(slope)
+    if (globalPlaying && !layer.isMuted) {
+      layer.engine.play(slope)
+    }
   }
 
   const handleRemoveLayer = () => {
@@ -133,14 +135,17 @@ export function NoiseController({
         </label>
       </div>
 
-      <label>
-        Mute
-        <input
-          type="checkbox"
-          checked={layer.isMuted}
-          onChange={handleMuteChange}
-        />
-      </label>
+      <div>
+        <label>
+          Mute
+          <input
+            type="checkbox"
+            checked={layer.isMuted}
+            onChange={handleMuteChange}
+          />
+        </label>
+      </div>
+
       <button onClick={handleRemoveLayer}>Remove Layer</button>
     </fieldset>
   )

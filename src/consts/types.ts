@@ -1,5 +1,5 @@
-import type { BinauralGenerator } from '@scripts/binaural-generator'
-import type { NoiseGenerator } from '@scripts/noise-generator'
+import type { BinauralGenerator } from 'generators/binaural-generator'
+import type { NoiseGenerator } from 'generators/noise-generator'
 
 export interface AudioEngine {
   stop(): void

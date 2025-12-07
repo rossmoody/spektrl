@@ -27,7 +27,7 @@
     "paths": {
       "@components/*": ["components/*"],
       "@hooks/*": ["hooks/*"],
-      "@scripts/*": ["scripts/*"],
+      "@generators/*": ["generators/*"],
       "@stores/*": ["stores/*"],
       "@consts/*": ["consts/*"]
     }

@@ -136,14 +136,16 @@ export function BinauralController({
         </label>
       </div>
 
-      <label>
-        Mute
-        <input
-          type="checkbox"
-          checked={layer.isMuted}
-          onChange={handleMuteChange}
-        />
-      </label>
+      <div>
+        <label>
+          Mute
+          <input
+            type="checkbox"
+            checked={layer.isMuted}
+            onChange={handleMuteChange}
+          />
+        </label>
+      </div>
       <button onClick={handleRemoveLayer}>Remove Layer</button>
     </fieldset>
   )

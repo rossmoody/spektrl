@@ -1,7 +1,7 @@
 import { BINAURAL_DEFAULTS, NOISE_DEFAULTS } from '@consts/defaults'
 import type { BinauralLayer, NoiseLayer, SoundLayer } from '@consts/types'
-import { BinauralGenerator } from '@scripts/binaural-generator'
-import { NoiseGenerator } from '@scripts/noise-generator'
+import { BinauralGenerator } from '@generators/binaural-generator'
+import { NoiseGenerator } from '@generators/noise-generator'
 import { create } from 'zustand'
 
 export interface SoundStore {

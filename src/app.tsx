@@ -12,11 +12,7 @@ export function App() {
   const layers = useSoundStore((s) => s.layers)
 
   const handlePlayChange = () => {
-    if (globalPlaying) {
-      stopAll()
-    } else {
-      playAll()
-    }
+    globalPlaying ? stopAll() : playAll()
     setGlobalIsPlaying(!globalPlaying)
   }
 
