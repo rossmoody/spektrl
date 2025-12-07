@@ -1,3 +1,4 @@
+import { BINAURAL_DEFAULTS, NOISE_DEFAULTS } from '@consts/defaults'
 import type { BinauralLayer, NoiseLayer, SoundLayer } from '@consts/types'
 import { BinauralGenerator } from '@scripts/binaural-generator'
 import { NoiseGenerator } from '@scripts/noise-generator'
@@ -11,11 +12,11 @@ export interface SoundStore {
   playAll: () => void
   stopAll: () => void
   setVolume: (id: string, volume: number) => void
-  setSlope: (id: string, slope: number) => void
-  setPan: (id: string, pan: number) => void
-  setFilterFrequency: (id: string, frequency: number) => void
-  toggleBreathe: (id: string, enabled: boolean) => void
   setMute: (id: string, muted: boolean) => void
+  setNoiseSlope: (id: string, slope: number) => void
+  setNoisePan: (id: string, pan: number) => void
+  setNoiseFilterFrequency: (id: string, frequency: number) => void
+  toggleNoiseBreathe: (id: string, enabled: boolean) => void
 }
 
 export const useSoundStore = create<SoundStore>((set, get) => ({
@@ -44,7 +45,7 @@ export const useSoundStore = create<SoundStore>((set, get) => ({
     }))
   },
 
-  setSlope: (id, slope) => {
+  setNoiseSlope: (id, slope) => {
     set((state) => ({
       layers: state.layers.map((layer) => {
         if (layer.id !== id) return layer
@@ -55,7 +56,7 @@ export const useSoundStore = create<SoundStore>((set, get) => ({
     }))
   },
 
-  setPan: (id, pan) => {
+  setNoisePan: (id, pan) => {
     set((state) => ({
       layers: state.layers.map((layer) => {
         if (layer.id !== id) return layer
@@ -66,7 +67,7 @@ export const useSoundStore = create<SoundStore>((set, get) => ({
     }))
   },
 
-  setFilterFrequency: (id, frequency) => {
+  setNoiseFilterFrequency: (id, frequency) => {
     set((state) => ({
       layers: state.layers.map((layer) => {
         if (layer.id === id) {
@@ -78,7 +79,7 @@ export const useSoundStore = create<SoundStore>((set, get) => ({
     }))
   },
 
-  toggleBreathe: (id, enabled) => {
+  toggleNoiseBreathe: (id, enabled) => {
     set((state) => ({
       layers: state.layers.map((layer) => {
         if (layer.id !== id) return layer
@@ -91,35 +92,20 @@ export const useSoundStore = create<SoundStore>((set, get) => ({
   },
 
   addNoiseLayer: () => {
-    const noise = new NoiseGenerator()
     const layer: NoiseLayer = {
-      type: 'noise',
       id: crypto.randomUUID(),
-      engine: noise,
-      slope: 0,
-      volume: 0.25,
-      pan: 0,
-      filterFrequency: 1,
-      isPlaying: true,
-      isBreathing: false,
-      isMuted: false,
+      engine: new NoiseGenerator(),
+      ...NOISE_DEFAULTS,
     }
     set((state) => ({ layers: [...state.layers, layer] }))
     return layer
   },
 
   addBinauralLayer: () => {
-    const binaural = new BinauralGenerator()
     const layer: BinauralLayer = {
-      type: 'binaural',
       id: crypto.randomUUID(),
-      engine: binaural,
-      volume: 0.25,
-      pan: 0,
-      isPlaying: true,
-      isMuted: false,
-      beatFrequency: 4,
-      carrierFrequency: 200,
+      engine: new BinauralGenerator(),
+      ...BINAURAL_DEFAULTS,
     }
     set((state) => ({ layers: [...state.layers, layer] }))
     return layer

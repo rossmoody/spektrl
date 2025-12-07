@@ -19,7 +19,11 @@ export function BinauralController({
     const isMuted = event.target.checked
     setMute(layer.id, isMuted)
     if (!isMuted && globalPlaying) {
-      layer.engine.play()
+      layer.engine.play(
+        layer.carrierFrequency,
+        layer.beatFrequency,
+        layer.waveform,
+      )
     } else {
       layer.engine.stop()
     }

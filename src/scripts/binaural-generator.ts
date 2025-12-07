@@ -12,11 +12,6 @@ export class BinauralGenerator {
   private volumeNode: GainNode
   private filter: BiquadFilterNode
 
-  // Track current values for updates while playing
-  private currentCarrier: number = 200
-  private currentBeat: number = 10
-  private currentWaveform: OscillatorType = 'sine'
-
   constructor() {
     this.audioContext = audioContext
 
@@ -28,8 +23,8 @@ export class BinauralGenerator {
     this.filter = this.audioContext.createBiquadFilter()
 
     // Signal chain: oscillators → gains → merger → filter → volume → destination
-    this.leftGain.connect(this.merger, 0, 0) // left channel
-    this.rightGain.connect(this.merger, 0, 1) // right channel
+    this.leftGain.connect(this.merger, 0, 0)
+    this.rightGain.connect(this.merger, 0, 1)
     this.merger.connect(this.filter)
     this.filter.connect(this.volumeNode)
     this.volumeNode.connect(this.audioContext.destination)
@@ -37,28 +32,25 @@ export class BinauralGenerator {
     // Defaults
     this.leftGain.gain.value = 1
     this.rightGain.gain.value = 1
-    this.volumeNode.gain.value = 0.15 // quieter than noise by default
+    this.volumeNode.gain.value = 0.15
     this.filter.type = 'lowpass'
-    this.filter.frequency.value = 1000 // soften the tone
+    this.filter.frequency.value = 1000
   }
 
-  // Playback
-
-  play(carrierFrequency: number = 200, beatFrequency: number = 10) {
+  play(
+    carrierFrequency: number,
+    beatFrequency: number,
+    waveform: OscillatorType = 'sine',
+  ) {
     this.stop()
 
-    this.currentCarrier = carrierFrequency
-    this.currentBeat = beatFrequency
-
-    // Left oscillator: carrier frequency
     this.leftOscillator = this.audioContext.createOscillator()
-    this.leftOscillator.type = this.currentWaveform
+    this.leftOscillator.type = waveform
     this.leftOscillator.frequency.value = carrierFrequency
     this.leftOscillator.connect(this.leftGain)
 
-    // Right oscillator: carrier + beat frequency
     this.rightOscillator = this.audioContext.createOscillator()
-    this.rightOscillator.type = this.currentWaveform
+    this.rightOscillator.type = waveform
     this.rightOscillator.frequency.value = carrierFrequency + beatFrequency
     this.rightOscillator.connect(this.rightGain)
 
@@ -79,35 +71,55 @@ export class BinauralGenerator {
     }
   }
 
-  // Parameter Controls
-
   applyVolume(value: number) {
     this.volumeNode.gain.value = value
   }
 
-  applyCarrierFrequency(hz: number) {
-    this.currentCarrier = hz
+  /**
+   * Changes the pitch of the tone you hear.
+   * 100 Hz: Deep hum (like a low bass note)
+   * 300 Hz: Mid-range hum (like a cello)
+   * 500 Hz: Higher hum (more present, can get annoying)
+   */
+  applyCarrierFrequency(carrier: number, beat: number) {
     if (this.leftOscillator && this.rightOscillator) {
-      this.leftOscillator.frequency.value = hz
-      this.rightOscillator.frequency.value = hz + this.currentBeat
+      this.leftOscillator.frequency.value = carrier
+      this.rightOscillator.frequency.value = carrier + beat
     }
   }
 
-  applyBeatFrequency(hz: number) {
-    this.currentBeat = hz
+  /**
+   * Changes how fast the perceived pulse is — the brain entrainment part.
+   * 4 Hz:  Slow pulse .... .... .... (theta, drowsy/meditative)
+   * 10 Hz: Medium pulse .. .. .. .. (alpha, relaxed focus)
+   * 25 Hz: Fast pulse .... (beta, alert)
+   */
+  applyBeatFrequency(carrier: number, beat: number) {
     if (this.rightOscillator) {
-      this.rightOscillator.frequency.value = this.currentCarrier + hz
+      this.rightOscillator.frequency.value = carrier + beat
     }
   }
 
+  /**
+   * Changes the timbre/texture of the tone.
+   * sine:     ∿∿∿∿  Pure, smooth, clinical (standard for binaural)
+   * triangle: /\/\  Slightly brighter, softer edges
+   * square:   ▔▁▔▁  Harsh, buzzy, hollow (like old video games)
+   * sawtooth: /|/|  Bright, aggressive, rich in harmonics
+   */
   applyWaveform(type: OscillatorType) {
-    this.currentWaveform = type
     if (this.leftOscillator && this.rightOscillator) {
       this.leftOscillator.type = type
       this.rightOscillator.type = type
     }
   }
 
+  /**
+   * Softens or brightens the tone by cutting high frequencies.
+   * Low filter (200 Hz):   Muffled, dark, gentle on the ears
+   * Mid filter (1000 Hz):  Natural, balanced
+   * High filter (5000 Hz): Bright, present, full tone
+   */
   applyFilterFrequency(value: number) {
     const frequency = 200 * Math.pow(5000 / 200, value)
     this.filter.frequency.value = frequency

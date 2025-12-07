@@ -6,10 +6,10 @@ type HTMLInputChangeEvent = ChangeEvent<HTMLInputElement>
 
 const {
   setVolume,
-  setPan,
-  setSlope,
-  setFilterFrequency,
-  toggleBreathe,
+  setNoisePan: setPan,
+  setNoiseSlope: setSlope,
+  setNoiseFilterFrequency: setFilterFrequency,
+  toggleNoiseBreathe: toggleBreathe,
   removeLayer,
   setMute,
 } = useSoundStore.getState()
@@ -23,8 +23,6 @@ export function NoiseController({
   layer,
   globalPlaying,
 }: NoiseControllerProps) {
-  console.log('Rendering NoiseController', layer.slope)
-
   const handleMuteChange = (event: HTMLInputChangeEvent) => {
     const isMuted = event.target.checked
     setMute(layer.id, isMuted)
