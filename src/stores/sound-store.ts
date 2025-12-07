@@ -13,7 +13,9 @@ import { create } from 'zustand'
 export type SoundLayer = NoiseLayer | BinauralLayer
 
 export interface SoundStore {
+  globalPlaying: boolean
   layers: SoundLayer[]
+  setGlobalPlaying: (playing: boolean) => void
   addLayer: (layer: SoundLayer) => void
   removeLayer: (id: string) => void
   updateLayer: <T extends SoundLayer['type']>(
@@ -45,10 +47,18 @@ function applyUpdates(layer: SoundLayer, updates: Partial<SoundLayer>) {
 }
 
 export const useSoundStore = create<SoundStore>((set, get) => ({
+  globalPlaying: false,
   layers: [],
+
+  setGlobalPlaying: (playing) => {
+    set({ globalPlaying: playing })
+  },
 
   addLayer: (layer) => {
     set((state) => ({ layers: [...state.layers, layer] }))
+    if (get().globalPlaying) {
+      playLayer(layer)
+    }
   },
 
   removeLayer: (id) => {
@@ -69,19 +79,21 @@ export const useSoundStore = create<SoundStore>((set, get) => ({
 
   playAll: () => {
     set((state) => ({
+      globalPlaying: true,
       layers: state.layers.map((layer) => {
         if (layer.isMuted) return layer
         playLayer(layer)
-        return { ...layer, isPlaying: true }
+        return { ...layer }
       }),
     }))
   },
 
   stopAll: () => {
     set((state) => ({
+      globalPlaying: false,
       layers: state.layers.map((layer) => {
         layer.engine.stop()
-        return { ...layer, isPlaying: false }
+        return { ...layer }
       }),
     }))
   },

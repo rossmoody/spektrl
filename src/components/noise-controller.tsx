@@ -8,6 +8,7 @@ interface Props {
 }
 
 export function NoiseController({ layer }: Props) {
+  const { globalPlaying } = useSoundStore.getState()
   const id = layer.id
 
   return (
@@ -88,9 +89,14 @@ export function NoiseController({ layer }: Props) {
         <input
           type="checkbox"
           checked={layer.isMuted}
-          onChange={(e) =>
-            updateLayer(id, 'noise', { isMuted: e.target.checked })
-          }
+          onChange={(e) => {
+            const isMuted = e.target.checked
+            updateLayer(id, 'noise', { isMuted })
+            if (globalPlaying && !isMuted) {
+              return layer.engine.play(layer.slope)
+            }
+            layer.engine.stop()
+          }}
         />
       </label>
 

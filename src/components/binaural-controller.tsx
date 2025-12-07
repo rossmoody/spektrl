@@ -8,6 +8,7 @@ interface BinauralControllerProps {
 }
 
 export function BinauralController({ layer }: BinauralControllerProps) {
+  const { globalPlaying } = useSoundStore.getState()
   const id = layer.id
 
   return (
@@ -82,9 +83,18 @@ export function BinauralController({ layer }: BinauralControllerProps) {
         <input
           type="checkbox"
           checked={layer.isMuted}
-          onChange={(e) =>
-            updateLayer(id, 'binaural', { isMuted: e.target.checked })
-          }
+          onChange={(e) => {
+            const isMuted = e.target.checked
+            updateLayer(id, 'binaural', { isMuted })
+            if (globalPlaying && !isMuted) {
+              return layer.engine.play(
+                layer.carrierFrequency,
+                layer.beatFrequency,
+                layer.waveform,
+              )
+            }
+            layer.engine.stop()
+          }}
         />
       </label>
 

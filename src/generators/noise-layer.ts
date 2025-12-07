@@ -8,18 +8,16 @@ export interface NoiseLayer {
   pan: number
   slope: number
   filterFrequency: number
-  isPlaying: boolean
   isMuted: boolean
   isBreathing: boolean
 }
 
-export const NOISE_DEFAULTS = {
+export const NOISE_DEFAULTS: Omit<NoiseLayer, 'id' | 'engine'> = {
   type: 'noise' as const,
   volume: 0.25,
   pan: 0,
   slope: 0,
   filterFrequency: 1,
-  isPlaying: false,
   isMuted: false,
   isBreathing: false,
 }
@@ -56,14 +54,11 @@ export function applyNoiseUpdates(
   if (updates.isBreathing !== undefined) {
     layer.engine.applyBreathe(updates.isBreathing)
   }
-  if (updates.slope !== undefined && layer.isPlaying) {
+  // Slope and play are interdependent
+  if (updates.slope !== undefined && !layer.isMuted) {
     layer.engine.play(updates.slope)
   }
   if (updates.isMuted !== undefined) {
-    if (updates.isMuted) {
-      layer.engine.stop()
-    } else if (layer.isPlaying) {
-      layer.engine.play(layer.slope)
-    }
+    layer.isMuted = updates.isMuted
   }
 }
