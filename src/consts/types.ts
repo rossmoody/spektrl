@@ -1,13 +1,19 @@
 import type { BinauralGenerator } from '@scripts/binaural-generator'
 import type { NoiseGenerator } from '@scripts/noise-generator'
 
+export interface AudioEngine {
+  play(param?: number): void
+  stop(): void
+  applyVolume(value: number): void
+}
+
 export interface BaseLayer {
   id: string
+  engine: AudioEngine
   volume: number
   pan: number
   isPlaying: boolean
   isMuted: boolean
-  type: 'noise' | 'binaural'
 }
 
 export interface NoiseLayer extends BaseLayer {

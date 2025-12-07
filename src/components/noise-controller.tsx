@@ -64,9 +64,10 @@ export function NoiseController({
 
   return (
     <fieldset>
+      <p>Noise Layer</p>
       <div>
         <label>
-          Color: {layer.slope}
+          Color
           <input
             type="range"
             min="-6"

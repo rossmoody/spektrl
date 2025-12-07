@@ -1,9 +1,11 @@
 // App.tsx
+import { BinauralController } from '@components/binaural-controller'
 import { NoiseController } from '@components/noise-controller'
 import { useSoundStore } from '@stores/noise-store'
 import { useState } from 'react'
 
-const { addLayer, playAll, stopAll } = useSoundStore.getState()
+const { addNoiseLayer, addBinauralLayer, playAll, stopAll } =
+  useSoundStore.getState()
 
 export function App() {
   const [globalPlaying, setGlobalIsPlaying] = useState(false)
@@ -18,8 +20,15 @@ export function App() {
     setGlobalIsPlaying(!globalPlaying)
   }
 
-  const handleAddLayer = () => {
-    const layer = addLayer()
+  const handleAddNoiseLayer = () => {
+    const layer = addNoiseLayer()
+    if (globalPlaying) {
+      layer.engine.play()
+    }
+  }
+
+  const handleAddBinauralLayer = () => {
+    const layer = addBinauralLayer()
     if (globalPlaying) {
       layer.engine.play()
     }
@@ -27,14 +36,32 @@ export function App() {
 
   return (
     <div>
-      {layers.map((layer) => (
-        <NoiseController
-          key={layer.id}
-          layer={layer}
-          globalPlaying={globalPlaying}
-        />
-      ))}
-      <button onClick={handleAddLayer}>Add Layer</button>
+      {layers.map((layer) => {
+        switch (layer.type) {
+          case 'noise': {
+            return (
+              <NoiseController
+                key={layer.id}
+                layer={layer}
+                globalPlaying={globalPlaying}
+              />
+            )
+          }
+          case 'binaural': {
+            return (
+              <BinauralController
+                key={layer.id}
+                layer={layer}
+                globalPlaying={globalPlaying}
+              />
+            )
+          }
+          default:
+            return null
+        }
+      })}
+      <button onClick={handleAddNoiseLayer}>Add Noise Layer</button>
+      <button onClick={handleAddBinauralLayer}>Add Binaural Layer</button>
       <button onClick={handlePlayChange}>
         {globalPlaying ? 'Stop' : 'Play'}
       </button>

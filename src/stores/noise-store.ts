@@ -1,10 +1,12 @@
-import type { NoiseLayer } from '@consts/types'
+import type { BinauralLayer, NoiseLayer, SoundLayer } from '@consts/types'
+import { BinauralGenerator } from '@scripts/binaural-generator'
 import { NoiseGenerator } from '@scripts/noise-generator'
 import { create } from 'zustand'
 
 export interface SoundStore {
-  layers: NoiseLayer[]
-  addLayer: () => NoiseLayer
+  layers: SoundLayer[]
+  addNoiseLayer: () => NoiseLayer
+  addBinauralLayer: () => BinauralLayer
   removeLayer: (id: string) => void
   playAll: () => void
   stopAll: () => void
@@ -45,10 +47,10 @@ export const useSoundStore = create<SoundStore>((set, get) => ({
   setSlope: (id, slope) => {
     set((state) => ({
       layers: state.layers.map((layer) => {
-        if (layer.id === id) {
-          return { ...layer, slope }
-        }
-        return layer
+        if (layer.id !== id) return layer
+        if (layer.type !== 'noise') return layer
+
+        return { ...layer, slope }
       }),
     }))
   },
@@ -56,11 +58,10 @@ export const useSoundStore = create<SoundStore>((set, get) => ({
   setPan: (id, pan) => {
     set((state) => ({
       layers: state.layers.map((layer) => {
-        if (layer.id === id) {
-          layer.engine.applyPan(pan)
-          return { ...layer, pan }
-        }
-        return layer
+        if (layer.id !== id) return layer
+        if (layer.type === 'binaural') return layer
+        layer.engine.applyPan(pan)
+        return { ...layer, pan }
       }),
     }))
   },
@@ -80,16 +81,16 @@ export const useSoundStore = create<SoundStore>((set, get) => ({
   toggleBreathe: (id, enabled) => {
     set((state) => ({
       layers: state.layers.map((layer) => {
-        if (layer.id === id) {
-          layer.engine.applyBreathe(enabled)
-          return { ...layer, isBreathing: enabled }
-        }
-        return layer
+        if (layer.id !== id) return layer
+        if (layer.type !== 'noise') return layer
+
+        layer.engine.applyBreathe(enabled)
+        return { ...layer, isBreathing: enabled }
       }),
     }))
   },
 
-  addLayer: () => {
+  addNoiseLayer: () => {
     const noise = new NoiseGenerator()
     const layer: NoiseLayer = {
       type: 'noise',
@@ -107,6 +108,23 @@ export const useSoundStore = create<SoundStore>((set, get) => ({
     return layer
   },
 
+  addBinauralLayer: () => {
+    const binaural = new BinauralGenerator()
+    const layer: BinauralLayer = {
+      type: 'binaural',
+      id: crypto.randomUUID(),
+      engine: binaural,
+      volume: 0.25,
+      pan: 0,
+      isPlaying: true,
+      isMuted: false,
+      beatFrequency: 4,
+      carrierFrequency: 200,
+    }
+    set((state) => ({ layers: [...state.layers, layer] }))
+    return layer
+  },
+
   removeLayer: (id) => {
     const layer = get().layers.find((l) => l.id === id)
     layer?.engine.stop()
@@ -116,11 +134,18 @@ export const useSoundStore = create<SoundStore>((set, get) => ({
   playAll: () => {
     set((state) => ({
       layers: state.layers.map((layer) => {
-        if (!layer.isMuted) {
-          layer.engine.play(layer.slope)
-          return { ...layer, isPlaying: true }
+        if (layer.isMuted) return layer
+
+        switch (layer.type) {
+          case 'binaural': {
+            layer.engine.play(layer.carrierFrequency, layer.beatFrequency)
+            return { ...layer, isPlaying: true }
+          }
+          case 'noise': {
+            layer.engine.play(layer.slope)
+            return { ...layer, isPlaying: true }
+          }
         }
-        return layer
       }),
     }))
   },
