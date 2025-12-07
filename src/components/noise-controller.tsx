@@ -23,11 +23,13 @@ export function NoiseController({
   layer,
   globalPlaying,
 }: NoiseControllerProps) {
+  console.log('Rendering NoiseController', layer.slope)
+
   const handleMuteChange = (event: HTMLInputChangeEvent) => {
     const isMuted = event.target.checked
     setMute(layer.id, isMuted)
     if (!isMuted && globalPlaying) {
-      layer.engine.play()
+      layer.engine.play(layer.slope)
     } else {
       layer.engine.stop()
     }
@@ -36,6 +38,7 @@ export function NoiseController({
   const handleColorChange = (event: HTMLInputChangeEvent) => {
     const slope = parseFloat(event.target.value)
     setSlope(layer.id, slope)
+    layer.engine.play(slope)
   }
 
   const handleRemoveLayer = () => {
@@ -67,12 +70,13 @@ export function NoiseController({
       <p>Noise Layer</p>
       <div>
         <label>
-          Color
+          Color {layer.slope}
           <input
             type="range"
             min="-6"
             max="6"
             step="0.1"
+            value={layer.slope}
             onChange={handleColorChange}
           />
         </label>
@@ -80,12 +84,13 @@ export function NoiseController({
 
       <div>
         <label>
-          Filter Frequency
+          Filter Frequency {layer.filterFrequency}
           <input
             type="range"
             min="0"
             max="1"
-            step="0.01"
+            step="0.05"
+            value={layer.filterFrequency}
             onChange={handleFilterFrequencyChange}
           />
         </label>
@@ -93,13 +98,13 @@ export function NoiseController({
 
       <div>
         <label>
-          Volume
+          Volume {layer.volume}
           <input
             type="range"
             min="0"
             max="1"
-            step="0.01"
-            defaultValue={0.25}
+            step="0.05"
+            value={layer.volume}
             onChange={handleVolumeChange}
           />
         </label>
@@ -107,13 +112,13 @@ export function NoiseController({
 
       <div>
         <label>
-          Pan
+          Pan {layer.pan}
           <input
             type="range"
             min="-1"
             max="1"
-            step="0.01"
-            defaultValue={0}
+            step="0.05"
+            value={layer.pan}
             onChange={handlePanChange}
           />
         </label>
@@ -122,13 +127,21 @@ export function NoiseController({
       <div>
         <label>
           Breathe
-          <input type="checkbox" onChange={handleBreatheChange} />
+          <input
+            type="checkbox"
+            checked={layer.isBreathing}
+            onChange={handleBreatheChange}
+          />
         </label>
       </div>
 
       <label>
         Mute
-        <input type="checkbox" onChange={handleMuteChange} />
+        <input
+          type="checkbox"
+          checked={layer.isMuted}
+          onChange={handleMuteChange}
+        />
       </label>
       <button onClick={handleRemoveLayer}>Remove Layer</button>
     </fieldset>
