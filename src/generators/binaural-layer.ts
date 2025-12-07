@@ -1,4 +1,3 @@
-// Binaural/BinauralLayer.ts
 import { BinauralGenerator } from './binaural-generator'
 
 export interface BinauralLayer {

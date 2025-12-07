@@ -1,4 +1,3 @@
-// Noise/NoiseLayer.ts
 import { NoiseGenerator } from './noise-generator'
 
 export interface NoiseLayer {

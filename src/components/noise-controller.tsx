@@ -1,5 +1,3 @@
-// Noise/NoiseController.tsx
-
 import type { NoiseLayer } from '@generators/noise-layer'
 import { useSoundStore } from '@stores/sound-store'
 
