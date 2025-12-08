@@ -4,7 +4,7 @@ import { createBinauralLayer } from '@generators/binaural-layer'
 import { createNoiseLayer } from '@generators/noise-layer'
 import { useSoundStore } from '@stores/sound-store'
 
-const { addLayer, playAll, stopAll } = useSoundStore.getState()
+const { addLayer, playAll, stopAll, reset } = useSoundStore.getState()
 
 export function App() {
   const layers = useSoundStore((s) => s.layers)
@@ -26,6 +26,7 @@ export function App() {
       </button>
       <button onClick={playAll}>Play</button>
       <button onClick={stopAll}>Pause</button>
+      <button onClick={reset}>Reset</button>
     </div>
   )
 }
